@@ -73,5 +73,8 @@ fabric.properties
 ### CLion ###
 .idea/*
 
+### VSCode ###
+.vscode/
+
 ### Data ###
 data/*
