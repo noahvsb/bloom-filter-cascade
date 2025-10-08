@@ -6,8 +6,9 @@ Command help_message(char* program) {
     printf("  Arguments:\n");
     printf("    -o <file>    output file\n");
     printf("    <file>       input file (last argument that isn't preceded by a flag)\n");
-    printf("  Example:\n");
-    printf("    %s train -o Bloom_filters.file categories.file\n\n", program);
+    printf("  Examples:\n");
+    printf("    %s train -o Bloom_filters.file categories.file\n", program);
+    printf("    %s train categories.file -o Bloom_filters.file\n\n", program);
     printf("classify:\n");
     printf("  Arguments:\n");
     printf("    <file>       input file\n");
@@ -46,19 +47,12 @@ Command parse_classify(int argc, char** argv) {
 }
 
 Command parse_arguments(int argc, char** argv) {
-    if (argc < 2)
-        return help_message(argv[0]);
-    
-    // help flag
-    if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0)
-        return help_message(argv[0]);
-
     // train
-    if (strcmp(argv[1], "train") == 0 && argc > 4)
+    if (argc > 4 && strcmp(argv[1], "train") == 0)
         return parse_train(argc, argv);
 
     // classify
-    if (strcmp(argv[1], "classify") == 0 && argc > 2)
+    if (argc > 2 && strcmp(argv[1], "classify") == 0)
         return parse_classify(argc, argv);
 
     return help_message(argv[0]);
