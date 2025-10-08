@@ -2,6 +2,8 @@
 #define ARGUMENTS_PARSER_H
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 typedef struct Train {
     char* outputFile;
