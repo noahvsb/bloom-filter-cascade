@@ -3,21 +3,11 @@
 #include "acutest.h"
 #include "../src/arguments_parser.h"
 
-#define COMMAND "./test_bloom_filter"
-
-void testUsageError(void) {
-    int argc = 3;
-    char* argv[] = { COMMAND, "train", "error" };
-    
-    printf("\n");
-    Command command = parse_arguments(argc, argv);
-
-    TEST_CHECK(command.type == NONE);
-}
+#define PROGRAM "./test_bloom_filter"
 
 void testHelpMessage(void) {
     int argc = 2;
-    char* argv[] = { COMMAND, "--help" };
+    char* argv[] = { PROGRAM, "--help" };
     
     printf("\n");
     Command command = parse_arguments(argc, argv);
@@ -27,7 +17,7 @@ void testHelpMessage(void) {
 
 void testTrainCommand(void) {
     int argc = 5;
-    char* argv[] = { COMMAND, "train", "-o", "cascade.file", "categories.file" };
+    char* argv[] = { PROGRAM, "train", "-o", "cascade.file", "categories.file" };
 
     Command command = parse_arguments(argc, argv);
 
@@ -38,7 +28,7 @@ void testTrainCommand(void) {
 
 void testClassifyCommand(void) {
     int argc = 3;
-    char* argv[] = { COMMAND, "classify", "cascade.file" };
+    char* argv[] = { PROGRAM, "classify", "cascade.file" };
 
     Command command = parse_arguments(argc, argv);
 

@@ -1,12 +1,18 @@
 #include "arguments_parser.h"
 
 Command help_message(char* program) {
-    printf("TODO: implement %s --help\n", program);
-    return (Command) { NONE };
-}
-
-Command usage_error(char* program) {
-    fprintf(stderr, "Usage: %s [train|classify] [...] (see %s --help for extra necessary arguments)\n", program, program);
+    printf("Usage: %s [train|classify] <arguments>\n\n", program);
+    printf("train:\n");
+    printf("  Arguments:\n");
+    printf("    -o <file>    output file\n");
+    printf("    <file>       input file (last argument that isn't preceded by a flag)\n");
+    printf("  Example:\n");
+    printf("    %s train -o Bloom_filters.file categories.file\n\n", program);
+    printf("classify:\n");
+    printf("  Arguments:\n");
+    printf("    <file>       input file\n");
+    printf("  Example:\n");
+    printf("    %s classify Bloom_filters.file\n", program);
     return (Command) { NONE };
 }
 
@@ -20,14 +26,14 @@ Command parse_train(int argc, char** argv) {
             if (i < argc)
                 train.outputFile = argv[i];
             else 
-                return usage_error(argv[0]);
+                return help_message(argv[0]);
         } else
             train.inputFile = argv[i];
         i++;
     }
 
     if (strlen(train.outputFile) == 0 || strlen(train.inputFile) == 0)
-        return usage_error(argv[0]);
+        return help_message(argv[0]);
 
     Command command = { TRAIN, { .train = train } };
     return command;
@@ -41,7 +47,7 @@ Command parse_classify(int argc, char** argv) {
 
 Command parse_arguments(int argc, char** argv) {
     if (argc < 2)
-        return usage_error(argv[0]);
+        return help_message(argv[0]);
     
     // help flag
     if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0)
@@ -55,6 +61,6 @@ Command parse_arguments(int argc, char** argv) {
     if (strcmp(argv[1], "classify") == 0 && argc > 2)
         return parse_classify(argc, argv);
 
-    return usage_error(argv[0]);
+    return help_message(argv[0]);
 }
 
