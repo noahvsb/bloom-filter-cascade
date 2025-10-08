@@ -16,11 +16,11 @@ SRC_FILES := $(SRC_DIR)/*.c
 
 .PHONY: all clean test
 
-all: $(SRC_TARGET)
+all: $(SRC_TARGET) test
 
 $(SRC_TARGET): $(SRC_FILES)
 	$(CC) $(CFLAGS) $^ -o $@
-	@echo "✅ Built $(SRC_TARGET)"
+	@echo "✅ Compiled $(SRC_TARGET)"
 
 test:
 	@echo "❌ TODO: add tests"
