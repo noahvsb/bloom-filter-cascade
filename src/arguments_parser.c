@@ -11,7 +11,7 @@ Command help_message(char* program) {
     printf("    %s train categories.file -o Bloom_filters.file\n\n", program);
     printf("classify:\n");
     printf("  Arguments:\n");
-    printf("    <file>       input file\n");
+    printf("    <file>       input file (first argument after 'classify')\n");
     printf("  Example:\n");
     printf("    %s classify Bloom_filters.file\n", program);
     return (Command) { NONE };

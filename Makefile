@@ -15,21 +15,19 @@ MASSIF_TARGET := memory.ms
 SRC_FILES := $(wildcard $(SRC_DIR)/*.c)
 TEST_FILES := $(wildcard $(TEST_DIR)/*.c)
 
-.PHONY: all test clean massif
+.PHONY: all build test massif memcheck clean
 
-all: $(SRC_TARGET) test
+all: build test massif memcheck
 
-$(SRC_TARGET): $(SRC_FILES)
-	$(CC) $(CFLAGS) $^ -o $@
+build: $(SRC_FILES)
+	$(CC) $(CFLAGS) $^ -o $(SRC_TARGET)
 	@echo "✅ Compiled $(SRC_TARGET)"
 
 test: $(TEST_FILES) $(filter-out $(SRC_DIR)/main.c, $(SRC_FILES)) # all test files + source files without main
 	$(CC) $(CFLAGS) $^ -o $(TEST_TARGET)
 	@echo "✅ Compiled $(TEST_TARGET)"
-
-clean:
-	rm -f $(SRC_TARGET) $(TEST_TARGET)
-	@echo "✅ removed target binaries"
+	./$(TEST_TARGET)
+	@echo "✅ ran tests"
 
 massif: test
 	valgrind --tool=massif --stacks=yes --massif-out-file=${MASSIF_TARGET} -- ./$(TEST_TARGET)
@@ -38,3 +36,7 @@ massif: test
 memcheck: test
 	valgrind --tool=memcheck -- ./${TEST_TARGET}
 	@echo "✅ valgrind memcheck done"
+
+clean:
+	rm -f $(SRC_TARGET) $(TEST_TARGET) $(MASSIF_TARGET)
+	@echo "✅ removed target binaries"
