@@ -1,3 +1,5 @@
 main.c
 arguments_parser.c
 arguments_parser.h
+categories_parser.c
+categories_parser.h
