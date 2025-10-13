@@ -9,12 +9,13 @@ TEST_DIR := test
 # Targets
 SRC_TARGET := Bloom_filter_cascade
 TEST_TARGET := run_tests
+MASSIF_TARGET := memory.ms
 
 # Source files
 SRC_FILES := $(wildcard $(SRC_DIR)/*.c)
 TEST_FILES := $(wildcard $(TEST_DIR)/*.c)
 
-.PHONY: all clean test
+.PHONY: all test clean massif
 
 all: $(SRC_TARGET) test
 
@@ -29,3 +30,11 @@ test: $(TEST_FILES) $(filter-out $(SRC_DIR)/main.c, $(SRC_FILES)) # all test fil
 clean:
 	rm -f $(SRC_TARGET) $(TEST_TARGET)
 	@echo "✅ removed target binaries"
+
+massif: test
+	valgrind --tool=massif --stacks=yes --massif-out-file=${MASSIF_TARGET} -- ./$(TEST_TARGET)
+	@echo "✅ valgrind massif done"
+
+memcheck: test
+	valgrind --tool=memcheck -- ./${TEST_TARGET}
+	@echo "✅ valgrind memcheck done"
