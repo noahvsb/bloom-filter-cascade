@@ -15,11 +15,11 @@ MASSIF_TARGET := memory.ms
 SRC_FILES := $(wildcard $(SRC_DIR)/*.c)
 TEST_FILES := $(wildcard $(TEST_DIR)/*.c)
 
-.PHONY: all debug build build_debug test massif memcheck clean
+.PHONY: all debug build build_debug build_test test valgrind memcheck massif clean
 
-all: build test massif memcheck
+all: build test
 
-debug: build_debug test massif memcheck
+debug: build_debug test
 
 build: $(SRC_FILES)
 	$(CC) $(CFLAGS) $^ -o $(SRC_TARGET)
@@ -29,17 +29,22 @@ build_debug: $(SRC_FILES)
 	$(CC) $(CFLAGS) -g $^ -o $(SRC_TARGET)
 	@echo "✅ compiled $(SRC_TARGET) with debug flag"
 
-test: $(TEST_FILES) $(filter-out $(SRC_DIR)/main.c, $(SRC_FILES)) # all test files + source files without main
-	$(CC) $(CFLAGS) $^ -o $(TEST_TARGET)
+build_test: $(TEST_FILES) $(filter-out $(SRC_DIR)/main.c, $(SRC_FILES)) # all test files + source files without main
+	$(CC) $(CFLAGS) -g $^ -o $(TEST_TARGET)
 	@echo "✅ compiled $(TEST_TARGET)"
+
+test: build_test
 	./$(TEST_TARGET)
 	@echo "✅ ran tests"
 
-massif: test
-	valgrind --tool=massif --stacks=yes --massif-out-file=${MASSIF_TARGET} -- ./$(TEST_TARGET)
+valgrind: massif memcheck
+
+massif: build_test
+	valgrind --tool=massif --stacks=yes --massif-out-file=$(MASSIF_TARGET) -- ./$(TEST_TARGET)
+	massif-visualizer $(MASSIF_TARGET)
 	@echo "✅ valgrind massif done"
 
-memcheck: test
+memcheck: build_test
 	valgrind --tool=memcheck -- ./${TEST_TARGET}
 	@echo "✅ valgrind memcheck done"
 
