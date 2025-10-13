@@ -8,4 +8,7 @@ void testHelpMessage(void);
 void testTrainCommand(void);
 void testClassifyCommand(void);
 
+// category parser tests
+void testParseCategories(void);
+
 #endif

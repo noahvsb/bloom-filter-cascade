@@ -34,7 +34,8 @@ build_test: $(TEST_FILES) $(filter-out $(SRC_DIR)/main.c, $(SRC_FILES)) # all te
 	@echo "✅ compiled $(TEST_TARGET)"
 
 test: build_test
-	./$(TEST_TARGET)
+	@ARGS="$(filter-out $@,$(MAKECMDGOALS))"; \
+	./$(TEST_TARGET) $$ARGS
 	@echo "✅ ran tests"
 
 valgrind: massif memcheck
