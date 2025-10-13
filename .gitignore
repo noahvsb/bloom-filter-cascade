@@ -7,6 +7,8 @@
 *.ko
 *.obj
 *.elf
+Bloom_filter_cascade
+run_tests
 
 # Linker output
 *.ilk
@@ -42,6 +44,7 @@
 *.su
 *.idb
 *.pdb
+*.ms
 
 # Kernel Module Compile Results
 *.mod*
