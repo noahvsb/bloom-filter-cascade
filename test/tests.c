@@ -5,5 +5,6 @@ TEST_LIST = {
     { "args: train command", testTrainCommand },
     { "args: classify command", testClassifyCommand },
     { "categories: parse", testParseCategories },
+    { "categories: fail", testParseCategoriesFail },
     { NULL, NULL }
 };

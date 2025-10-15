@@ -17,20 +17,18 @@ Command help_message(char* program) {
     return (Command) { NONE };
 }
 
-Command parse_train(int argc, char** argv) {
+Command parse_train(uint8_t argc, char** argv) {
     Train train = { "", "" };
 
-    int i = 2;
-    while (i < argc) {
+    for (uint8_t i = 2; i < argc; i++) {
         if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--output") == 0) {
             i++;
             if (i < argc)
                 train.outputFile = argv[i];
             else 
-                return help_message(argv[0]);
+                return help_message(argv[0]); // still necessary for the following case: PROGRAM train input.file -o output.file -o
         } else
             train.inputFile = argv[i];
-        i++;
     }
 
     if (strlen(train.outputFile) == 0 || strlen(train.inputFile) == 0)
@@ -40,13 +38,13 @@ Command parse_train(int argc, char** argv) {
     return command;
 }
 
-Command parse_classify(int argc, char** argv) {
+Command parse_classify(uint8_t argc, char** argv) {
     Classify classify = { argv[2] };
     Command command = { CLASSIFY, { .classify = classify } };
     return command;
 }
 
-Command parse_arguments(int argc, char** argv) {
+Command parse_arguments(uint8_t argc, char** argv) {
     // train
     if (argc > 4 && strcmp(argv[1], "train") == 0)
         return parse_train(argc, argv);

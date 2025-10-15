@@ -10,5 +10,6 @@ void testClassifyCommand(void);
 
 // category parser tests
 void testParseCategories(void);
+void testParseCategoriesFail(void);
 
 #endif

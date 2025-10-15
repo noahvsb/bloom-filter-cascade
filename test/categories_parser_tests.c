@@ -43,3 +43,14 @@ void testParseCategories(void) {
     // not checking all category4 elements, category4 was just there to check if leftover_size gets updated if it becomes 0
 }
 
+void testParseCategoriesFail(void) {
+    char* file_path = "data/unknown.txt";
+    printf("\n");
+    CategoryList* list = parse_categories(file_path);
+    TEST_CHECK(list == NULL);
+    
+    file_path = "data/testfail.txt";
+    list = parse_categories(file_path);
+    TEST_CHECK(list == NULL);
+}
+
