@@ -6,5 +6,6 @@ TEST_LIST = {
     { "args: classify command", testClassifyCommand },
     { "categories: parse", testParseCategories },
     { "categories: fail", testParseCategoriesFail },
+    { "hash: murmurhash", testMurmurhash },
     { NULL, NULL }
 };

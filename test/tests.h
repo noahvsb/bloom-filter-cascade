@@ -12,4 +12,7 @@ void testClassifyCommand(void);
 void testParseCategories(void);
 void testParseCategoriesFail(void);
 
+// hash tests
+void testMurmurhash(void); // simple test to see if I copy pasted correctly ;)
+
 #endif
