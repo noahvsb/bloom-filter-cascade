@@ -29,6 +29,6 @@ typedef struct Command {
     CommandData data;
 } Command;
 
-Command parse_arguments(uint8_t argc, char** argv);
+Command parse_arguments(int argc, char** argv);
 
 #endif

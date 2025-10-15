@@ -17,7 +17,7 @@ Command help_message(char* program) {
     return (Command) { NONE };
 }
 
-Command parse_train(uint8_t argc, char** argv) {
+Command parse_train(int argc, char** argv) {
     Train train = { "", "" };
 
     for (uint8_t i = 2; i < argc; i++) {
@@ -38,13 +38,13 @@ Command parse_train(uint8_t argc, char** argv) {
     return command;
 }
 
-Command parse_classify(uint8_t argc, char** argv) {
+Command parse_classify(int argc, char** argv) {
     Classify classify = { argv[2] };
     Command command = { CLASSIFY, { .classify = classify } };
     return command;
 }
 
-Command parse_arguments(uint8_t argc, char** argv) {
+Command parse_arguments(int argc, char** argv) {
     // train
     if (argc > 4 && strcmp(argv[1], "train") == 0)
         return parse_train(argc, argv);

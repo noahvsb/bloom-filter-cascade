@@ -2,7 +2,7 @@
 #include "arguments_parser.h"
 #include "categories_parser.h"
 
-int main(uint8_t argc, char** argv) {
+int main(int argc, char** argv) {
     Command command = parse_arguments(argc, argv);
     switch (command.type) {
         case TRAIN:

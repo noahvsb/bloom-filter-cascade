@@ -4,7 +4,7 @@
 #include "../src/categories_parser.h"
 
 void testParseCategories(void) {
-    char* file_path = "data/test.txt";
+    char* file_path = "test/data/test.txt";
 
     CategoryList* list = parse_categories(file_path);
 
@@ -44,12 +44,12 @@ void testParseCategories(void) {
 }
 
 void testParseCategoriesFail(void) {
-    char* file_path = "data/unknown.txt";
+    char* file_path = "test/data/unknown.txt";
     printf("\n");
     CategoryList* list = parse_categories(file_path);
     TEST_CHECK(list == NULL);
     
-    file_path = "data/testfail.txt";
+    file_path = "test/data/testfail.txt";
     list = parse_categories(file_path);
     TEST_CHECK(list == NULL);
 }
