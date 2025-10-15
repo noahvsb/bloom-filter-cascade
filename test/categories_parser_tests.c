@@ -1,7 +1,7 @@
 #define TEST_NO_MAIN
 
 #include "acutest.h"
-#include "../src/categories_parser.h"
+#include "../src/categories/categories_parser.h"
 
 void testParseCategories(void) {
     char* file_path = "test/data/test.txt";

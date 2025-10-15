@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "arguments_parser.h"
-#include "categories_parser.h"
+#include "arguments/arguments_parser.h"
+#include "categories/categories_parser.h"
 
 int main(int argc, char** argv) {
     Command command = parse_arguments(argc, argv);

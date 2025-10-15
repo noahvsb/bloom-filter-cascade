@@ -1,7 +1,7 @@
 #define TEST_NO_MAIN
 
 #include "acutest.h"
-#include "../src/arguments_parser.h"
+#include "../src/arguments/arguments_parser.h"
 
 #define PROGRAM "./test_bloom_filter"
 
