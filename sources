@@ -5,3 +5,5 @@ bloomfilter/bloomfilter.c
 bloomfilter/bloomfilter.h
 categories/categories_parser.c
 categories/categories_parser.h
+hash/murmurhash.c
+hash/murmurhash.h
