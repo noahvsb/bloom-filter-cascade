@@ -7,6 +7,11 @@
 #include "../categories/categories_parser.h"
 #include "../hash/murmurhash.h"
 
-uint64_t* create_bloomfilter(CategoryList* list, uint64_t except); // creates a bloomfilter with all categories from list except the one at index = except
+typedef struct Bloomfilter {
+    uint32_t size; // amount of bits / 64
+    uint64_t* bf;
+} Bloomfilter;
+
+Bloomfilter* create_bloomfilter(CategoryList* list, uint64_t except); // creates a bloomfilter with all categories from list except the one at index = except
 
 #endif

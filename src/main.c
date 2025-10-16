@@ -11,11 +11,13 @@ int main(int argc, char** argv) {
             CategoryList* list = parse_categories(command.data.train.inputFile);
             if (!list) exit(1);
             printf("Amount of elements in category list: %ld\n", list->elements_size);
-            uint64_t* bloomfilter = create_bloomfilter(list, 0);
+            Bloomfilter* bloomfilter = create_bloomfilter(list, 0);
             if (!bloomfilter) exit(1);
             // TODO
-            for (int i = 63; i >= 0; i--) {
-                putchar((bloomfilter[0] & (1ULL << i)) ? '1' : '0');
+            for (int i = bloomfilter->size - 1; i >= 0; i--) {
+                for (int j = 63; j >= 0; j--) {
+                    putchar((bloomfilter->bf[i] & (1ULL << j)) ? '1' : '0');
+                }
             }
             putchar('\n');
             free_categories(list);
