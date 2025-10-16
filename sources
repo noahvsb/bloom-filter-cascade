@@ -1,7 +1,7 @@
 main.c
 arguments/arguments_parser.c
 arguments/arguments_parser.h
-categories/categories_parser.c
-categories/categories_parser.h
 bloomfilter/bloomfilter.c
 bloomfilter/bloomfilter.h
+categories/categories_parser.c
+categories/categories_parser.h
