@@ -12,11 +12,12 @@ char* get_name_from_line(char* line, uint8_t start, uint8_t length) {
 
 CategoryList* parse_categories(char* file_path) {
     CategoryList* list = malloc(sizeof(CategoryList));
-    list->size = 0;
+    list->categories_size = 0;
+    list->elements_size = 0;
     list->leftover_size = 10;
-    list->items = malloc(sizeof(Category*) * list->leftover_size);
-    if (!list->items) {
-        fprintf(stderr, "Memory allocation of list items failed");
+    list->categories = malloc(sizeof(Category*) * list->leftover_size);
+    if (!list->categories) {
+        fprintf(stderr, "Memory allocation of categories failed");
         return NULL;
     }
 
@@ -61,27 +62,28 @@ CategoryList* parse_categories(char* file_path) {
             }
 
             // add category to list
-            list->items[list->size] = category;
-            list->size++;
+            list->categories[list->categories_size] = category;
+            list->categories_size++;
             list->leftover_size--;
             
             if (list->leftover_size == 0) {
-                list->items = realloc(list->items, sizeof(Category*) * list->size * 2);
-                if (!list->items) {
-                    fprintf(stderr, "Memory reallocation of list items failed");
+                list->categories = realloc(list->categories, sizeof(Category*) * list->categories_size * 2);
+                if (!list->categories) {
+                    fprintf(stderr, "Memory reallocation of categories failed");
                     return NULL;
                 }
-                list->leftover_size = list->size;
+                list->leftover_size = list->categories_size;
             }
         } 
         // new element in category
         else {
-            Category* category = list->items[list->size - 1];
+            Category* category = list->categories[list->categories_size - 1];
             category->elements[category->size] = get_name_from_line(line, 0, line_length);
             if (!category->elements[category->size]) {
                 fprintf(stderr, "Memory allocation of category element failed");
                 return NULL;
             }
+            list->elements_size++;
             category->size++;
             category->leftover_size--;
             
@@ -115,10 +117,10 @@ void free_category(Category* category) {
 
 void free_categories(CategoryList* list) {
     if (list) {
-        if (list->items) {
-            for (uint64_t i = 0; i < list->size; i++)
-                free_category(list->items[i]);
-            free(list->items);
+        if (list->categories) {
+            for (uint64_t i = 0; i < list->categories_size; i++)
+                free_category(list->categories[i]);
+            free(list->categories);
         }
         free(list);
     }

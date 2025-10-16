@@ -10,8 +10,9 @@ int main(int argc, char** argv) {
             CategoryList* list = parse_categories(command.data.train.inputFile);
             if (!list) exit(1);
             // TODO
-            for (uint8_t i = 0; i < list->size; i++) {
-                printf("%s with size %ld and first element %s\n", list->items[i]->name, list->items[i]->size, list->items[i]->elements[0]);
+            printf("Amount of elements in category list: %ld\n", list->elements_size);
+            for (uint8_t i = 0; i < list->categories_size; i++) {
+                printf("%s with size %ld and first element %s\n", list->categories[i]->name, list->categories[i]->size, list->categories[i]->elements[0]);
             }
             free_categories(list);
             break;

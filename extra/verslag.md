@@ -1,6 +1,5 @@
 ## algoritme
 
-
 ### cascadetrap met $C_1, C_2, ..., C_n$
 
 $C_1 \Rightarrow BF_1(C_2, C_3, ..., C_n) \Rightarrow C_1'$
@@ -20,4 +19,11 @@ Zo hebben we al veel elementen kunnen uitsluiten.
 Dan de volgende cascade doen we met $C_1', C_2', ..., C_n'$
 
 Het is wel duidelijk dat $C_1'$ gemiddeld groter zal zijn dan $C_n'$ en dezelfde volgorde opnieuw aanhouden zal deze kloof steeds meer en meer vergroten. De beste manier om dit tegen te gaan en daardoor minder cascadetrappen te hebben is om alles te sorteren op grootte en de grootste laatst te doen. Maar dit zal traag zijn, dus een mogelijkheid is om met een heuristiek te werken, bv. telkens omdraaien, eerst $C_1, ..., C_n,$ dan $C_n', ..., C_1',$ dan $C_1'', ..., C_n''$ enz.
+
+
+## # bits en hashfuncties
+
+\# hashfuncties: $k = \frac{n}{m} * \ln{2}$
+
+kans op false positives: $(1 - e^{\frac{-km}{n}})^k$
 

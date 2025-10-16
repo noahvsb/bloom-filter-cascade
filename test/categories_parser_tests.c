@@ -8,14 +8,15 @@ void testParseCategories(void) {
 
     CategoryList* list = parse_categories(file_path);
 
-    TEST_CHECK(list->size == 5);
+    TEST_CHECK(list->categories_size == 5);
     TEST_CHECK(list->leftover_size == 5);
+    TEST_CHECK(list->elements_size == 17);
     
-    Category* category0 = list->items[0];
-    Category* category1 = list->items[1];
-    Category* category2 = list->items[2];
-    Category* category3 = list->items[3];
-    Category* category4 = list->items[4];
+    Category* category0 = list->categories[0];
+    Category* category1 = list->categories[1];
+    Category* category2 = list->categories[2];
+    Category* category3 = list->categories[3];
+    Category* category4 = list->categories[4];
 
     TEST_CHECK(category0->size == 3);
     TEST_CHECK(category0->leftover_size == 7);

@@ -14,9 +14,10 @@ typedef struct Category {
 } Category;
 
 typedef struct CategoryList {
-    Category** items;
-    uint64_t size;
+    Category** categories;
+    uint64_t categories_size;
     uint64_t leftover_size; // size of memory that has been allocated, but not yet initialized
+    uint64_t elements_size;
 } CategoryList;
 
 CategoryList* parse_categories(char* file_path);
