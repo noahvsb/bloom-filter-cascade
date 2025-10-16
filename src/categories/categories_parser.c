@@ -14,7 +14,7 @@ CategoryList* parse_categories(char* file_path) {
     CategoryList* list = malloc(sizeof(CategoryList));
     list->categories_size = 0;
     list->elements_size = 0;
-    list->leftover_size = 10;
+    list->leftover_size = 32;
     list->categories = malloc(sizeof(Category*) * list->leftover_size);
     if (!list->categories) {
         fprintf(stderr, "Memory allocation of categories failed");
@@ -54,7 +54,7 @@ CategoryList* parse_categories(char* file_path) {
                 return NULL;
             }
             category->size = 0;
-            category->leftover_size = 10;
+            category->leftover_size = 32;
             category->elements = malloc(sizeof(char*) * category->leftover_size);
             if (!category->elements) {
                 fprintf(stderr, "Memory allocation of category elements failed");
