@@ -10,7 +10,7 @@
 #include "../tools/clean_return.h"
 
 typedef struct Bloomfilter {
-    uint64_t size; // amount of bits / 8
+    uint32_t size; // amount of bits / 8
     uint8_t* bf;
 } Bloomfilter;
 
@@ -21,7 +21,7 @@ typedef struct Bloomfilter {
  * @param except: the category that should be left out of the bloomfilter, put -1 if you don't want to exclude a category
  * @param p: the chance for false positives will be lower or equal than 1 / 2^p
  */
-Bloomfilter* create_bloomfilter(CategoryList* list, int64_t except, uint8_t p);
+Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, uint8_t p);
 
 void free_bloomfilter(Bloomfilter* bloomfilter);
 

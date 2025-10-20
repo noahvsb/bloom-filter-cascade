@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
             printf("input: %s, output: %s\n", command.data.train.inputFile, command.data.train.outputFile);
             CategoryList* list = parse_categories(command.data.train.inputFile);
             if (!list) exit(1);
-            printf("Amount of elements in category list: %ld\n", list->elements_size);
+            printf("Amount of elements in category list: %d\n", list->elements_size);
             Bloomfilter* bloomfilter = create_bloomfilter(list, -1, 5);
             if (!bloomfilter) exit(1);
             // TODO

@@ -15,7 +15,7 @@ void testBloomfilterCreate(void) {
     char* element_in = "element3";
     uint8_t count = 0;
     for (int8_t l = 0; l < k; l++) {
-        uint64_t hash = murmurhash(element_in, 8, l) % (n * 8);
+        uint32_t hash = murmurhash(element_in, 8, l) % (n * 8);
         if (bloomfilter->bf[hash / 8] & (1ULL << (hash % 8))) count++;
     }
     TEST_CHECK(count == k);
@@ -23,7 +23,7 @@ void testBloomfilterCreate(void) {
     char* element_out = "element7";
     count = 0;
     for (int8_t l = 0; l < k; l++) {
-        uint64_t hash = murmurhash(element_out, 8, l) % (n * 8);
+        uint32_t hash = murmurhash(element_out, 8, l) % (n * 8);
         if (bloomfilter->bf[hash / 8] & (1ULL << (hash % 8))) count++;
     }
     TEST_CHECK(count < k);

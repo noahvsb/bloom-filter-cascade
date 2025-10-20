@@ -59,3 +59,7 @@ deze p zullen we meegeven aan de bloomfilter om de n mee te berekenen
 
 met benchmarks kunnen we dan achteraf een goede heuristiek voor p vinden voor mijn algoritme
 
+## bestandsformaat cascade
+
+
+

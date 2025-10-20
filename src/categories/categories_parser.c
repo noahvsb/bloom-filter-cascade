@@ -111,7 +111,7 @@ void free_category(Category* category) {
         if (category->name)
             free(category->name);
         if (category->elements) {
-            for (uint64_t i = 0; i < category->size; i++)
+            for (uint32_t i = 0; i < category->size; i++)
                 free(category->elements[i]);
             free(category->elements);
         }
@@ -122,7 +122,7 @@ void free_category(Category* category) {
 void free_categories(CategoryList* list) {
     if (list) {
         if (list->categories) {
-            for (uint64_t i = 0; i < list->categories_size; i++)
+            for (uint32_t i = 0; i < list->categories_size; i++)
                 free_category(list->categories[i]);
             free(list->categories);
         }
