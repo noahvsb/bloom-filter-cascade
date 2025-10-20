@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
             CategoryList* list = parse_categories(command.data.train.inputFile);
             if (!list) exit(1);
             printf("Amount of elements in category list: %ld\n", list->elements_size);
-            Bloomfilter* bloomfilter = create_bloomfilter(list, 0);
+            Bloomfilter* bloomfilter = create_bloomfilter(list, -1, 5);
             if (!bloomfilter) exit(1);
             // TODO
             for (int i = bloomfilter->size - 1; i >= 0; i--) {

@@ -4,14 +4,22 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "../categories/categories_parser.h"
 #include "../hash/murmurhash.h"
 
 typedef struct Bloomfilter {
-    uint32_t size; // amount of bits / 64
-    uint64_t* bf;
+    uint32_t size; // amount of bits / 8
+    uint8_t* bf;
 } Bloomfilter;
 
-Bloomfilter* create_bloomfilter(CategoryList* list, uint64_t except); // creates a bloomfilter with all categories from list except the one at index = except
+/**
+ * creates a bloomfilter with all categories from list except the one at index = except
+ * 
+ * @param list: category list of all categories
+ * @param except: the category that should be left out of the bloomfilter, put -1 if you don't want to exclude a category
+ * @param p: the chance for false positives will be lower or equal than 1 / 2^p
+ */
+Bloomfilter* create_bloomfilter(CategoryList* list, int64_t except, uint8_t p);
 
 #endif

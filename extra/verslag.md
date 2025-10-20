@@ -23,7 +23,39 @@ Het is wel duidelijk dat $C_1'$ gemiddeld groter zal zijn dan $C_n'$ en dezelfde
 
 ## # bits en hashfuncties
 
-\# hashfuncties: $k = \frac{n}{m} * \ln{2}$
+\# hashfuncties optimaal: $k = \frac{n}{m} * \ln{2}$
 
 kans op false positives: $(1 - e^{\frac{-km}{n}})^k$
+
+kans bij optimale k: $(1 - e^{-\ln{2}})^{\frac{n}{m} * \ln{2}} = (1 - \frac{1}{2})^{\frac{n}{m} * \ln{2}} = (\frac{1}{2})^{\frac{n}{m} * \ln{2}}$
+
+hoeveel moet n i.f.v. met m zijn om de $\text{kans} \leq x$ te maken?
+
+$
+(\frac{1}{2})^{\frac{n}{m} * \ln{2}} \leq x 
+\Leftrightarrow 
+2^{\frac{n}{m} * \ln{2}} \geq \frac{1}{x}
+\Leftrightarrow
+\frac{n}{m} * \ln{2} \geq \ln{(\frac{1}{x})}
+\Leftrightarrow
+n \geq -m*\frac{\ln{x}}{\ln{2}}
+$
+
+neem voor x telkens een negatieve macht van 2: $x = 2^{-p}$ met $p = 1, 2, 3, ...$
+
+dan wordt onze formule:
+
+$n \geq m * p$
+
+Dus als we kans op false positives 1/32 willen en m = 1 MB (1 000 000 B) dan hebben we:
+
+$n \geq 5 \text{ MB}$
+
+en bij $n = 5 \text{ MB}$ hebben we:
+
+$k = \lfloor 5 * \ln{2} \rfloor = \lfloor 3.465... \rfloor = 3$
+
+deze p zullen we meegeven aan de bloomfilter om de n mee te berekenen
+
+met benchmarks kunnen we dan achteraf een goede heuristiek voor p vinden voor mijn algoritme
 
