@@ -7,3 +7,5 @@ categories/categories_parser.c
 categories/categories_parser.h
 hash/murmurhash.c
 hash/murmurhash.h
+tools/clean_return.c
+tools/clean_return.h

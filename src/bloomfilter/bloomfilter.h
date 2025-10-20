@@ -7,6 +7,7 @@
 #include <math.h>
 #include "../categories/categories_parser.h"
 #include "../hash/murmurhash.h"
+#include "../tools/clean_return.h"
 
 typedef struct Bloomfilter {
     uint64_t size; // amount of bits / 8

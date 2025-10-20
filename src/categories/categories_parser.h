@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include "../tools/clean_return.h"
 
 typedef struct Category {
     char* name;
