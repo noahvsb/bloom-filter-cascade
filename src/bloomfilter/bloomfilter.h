@@ -9,7 +9,7 @@
 #include "../hash/murmurhash.h"
 
 typedef struct Bloomfilter {
-    uint32_t size; // amount of bits / 8
+    uint64_t size; // amount of bits / 8
     uint8_t* bf;
 } Bloomfilter;
 
@@ -21,5 +21,7 @@ typedef struct Bloomfilter {
  * @param p: the chance for false positives will be lower or equal than 1 / 2^p
  */
 Bloomfilter* create_bloomfilter(CategoryList* list, int64_t except, uint8_t p);
+
+void free_bloomfilter(Bloomfilter* bloomfilter);
 
 #endif

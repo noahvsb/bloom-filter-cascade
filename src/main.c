@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
             }
             putchar('\n');
             free_categories(list);
-            free(bloomfilter);
+            free_bloomfilter(bloomfilter);
             break;
         case CLASSIFY:
             // TODO

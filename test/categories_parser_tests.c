@@ -42,16 +42,22 @@ void testParseCategories(void) {
     TEST_CHECK(strcmp(category3->elements[0], "element4") == 0);
     TEST_CHECK(strcmp(category3->elements[1], "element5") == 0);
     // not checking all category4 elements, category4 was just there to check if leftover_size gets updated if it becomes 0
+
+    free_categories(list);
 }
 
-void testParseCategoriesFail(void) {
+void testParseCategoriesFailcheck(void) {
     char* file_path = "test/data/unknown.txt";
     printf("\n");
     CategoryList* list = parse_categories(file_path);
     TEST_CHECK(list == NULL);
+
+    free_categories(list);
     
     file_path = "test/data/testfail.txt";
     list = parse_categories(file_path);
     TEST_CHECK(list == NULL);
+
+    free_categories(list);
 }
 

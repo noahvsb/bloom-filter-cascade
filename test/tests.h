@@ -10,9 +10,13 @@ void testClassifyCommand(void);
 
 // category parser tests
 void testParseCategories(void);
-void testParseCategoriesFail(void);
+void testParseCategoriesFailcheck(void);
 
 // hash tests
 void testMurmurhash(void); // simple test to see if I copy pasted correctly ;)
+
+// bloomfilter tests
+void testBloomfilterCreate(void);
+void testBloomfilterFailcheck(void);
 
 #endif

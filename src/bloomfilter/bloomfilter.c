@@ -25,11 +25,18 @@ Bloomfilter* create_bloomfilter(CategoryList* list, int64_t except, uint8_t p) {
             uint8_t element_length = strlen(element);
             for (int8_t l = 0; l < k; l++) {
                 uint64_t hash = murmurhash(element, element_length, l) % (n * 8);
-                printf("hash for %s with seed %d: %ld\n", element, l, hash);
                 bloomfilter->bf[hash / 8] |= (1ULL << (hash % 8));
             }
         }
     }
 
     return bloomfilter;
+}
+
+void free_bloomfilter(Bloomfilter* bloomfilter) {
+    if (bloomfilter) {
+        if (bloomfilter->bf)
+            free(bloomfilter->bf);
+        free(bloomfilter);
+    }
 }

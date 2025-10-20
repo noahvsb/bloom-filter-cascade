@@ -46,7 +46,7 @@ massif: build_test
 	@echo "✅ valgrind massif done"
 
 memcheck: build_test
-	valgrind --tool=memcheck -- ./${TEST_TARGET}
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all -- ./${TEST_TARGET}
 	@echo "✅ valgrind memcheck done"
 
 clean:
