@@ -1,5 +1,10 @@
 #include "bloomfilter.h"
 
+void* clean_return(Bloomfilter* Bloomfilter) {
+    free_bloomfilter(Bloomfilter);
+    return NULL;
+}
+
 Bloomfilter* create_bloomfilter(CategoryList* list, int64_t except, uint8_t p) {
     uint64_t n8 = list->elements_size * p; // amount of bits (n = m * p)
     uint64_t n = (n8 + 7) / 8; // amount of bits / 8 rounded up
@@ -8,13 +13,13 @@ Bloomfilter* create_bloomfilter(CategoryList* list, int64_t except, uint8_t p) {
     Bloomfilter* bloomfilter = malloc(sizeof(Bloomfilter));
     if (!bloomfilter) {
         fprintf(stderr, "Memory allocation of bloomfilter failed\n");
-        return NULL;
+        return clean_return(bloomfilter);
     }
     bloomfilter->size = n;
     bloomfilter->bf = calloc(n, sizeof(uint8_t));
     if (!bloomfilter->bf) {
         fprintf(stderr, "Memory allocation of bloomfilter failed\n");
-        return NULL;
+        return clean_return(bloomfilter);
     }
 
     for (int64_t i = 0; i < list->categories_size; i++) {
