@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "arguments/arguments_parser.h"
-#include "categories/categories_parser.h"
+#include "file/categories_parser.h"
 #include "bloomfilter/bloomfilter.h"
 
 int main(int argc, char** argv) {

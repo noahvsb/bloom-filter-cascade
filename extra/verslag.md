@@ -61,5 +61,18 @@ met benchmarks kunnen we dan achteraf een goede heuristiek voor p vinden voor mi
 
 ## bestandsformaat cascade
 
+vooraf:
+- aantal categoriëen (32 bits) = aantal bloomfilters per trap
+- namen van categoriëen in juiste volgorde (8 * (lengte + 1) bits), +1 door het eindigen met \0 na elke naam
 
+elke cascade trap:
+- /
+
+elke bloomfilter binnen de trap:
+- aantal bits in bloomfilter / 8 (32 bits)
+- bloomfilter bits
+
+indien de categorie horende bij een bloomfilter leeg is, is het aantal bits gewoon 0 en ga je verder, dit is beter dan elke keer alle nieuwe lege categoriëen aan te kondigen of nutteloze bloomfilters aan te maken
+
+eindigen met de laatste niet lege categorie naam in ascii (8 * lengte bits) en een EOF, geen nut om een nieuwe trap te maken indien nog maar 1 categorie overschiet die niet leeg is
 

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "../categories/categories_parser.h"
+#include "../file/categories_parser.h"
 #include "../hash/murmurhash.h"
 #include "../tools/clean_return.h"
 
