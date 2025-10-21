@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../file/categories_parser.h"
+#include "../file/cascade_writer.h"
 
 /**
  * returns 0 if success
