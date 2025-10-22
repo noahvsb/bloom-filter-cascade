@@ -80,5 +80,6 @@ elke bloomfilter binnen de trap:
 
 indien de categorie horende bij een bloomfilter leeg is, is het aantal bits gewoon 0 en ga je verder, dit is beter dan elke keer alle nieuwe lege categoriëen aan te kondigen of nutteloze bloomfilters aan te maken
 
-eindigen met de laatste niet lege categorie naam in ascii (8 * lengte bits) en een EOF, geen nut om een nieuwe trap te maken indien nog maar 1 categorie overschiet die niet leeg is
+eindigen met 32 1 bits, aangezien 32 0 bits een lege bloomfilter betekent
+en dan de laatste niet lege categorie naam in ascii (8 * lengte bits) en een EOF, geen nut om een nieuwe trap te maken indien nog maar 1 categorie overschiet die niet leeg is
 
