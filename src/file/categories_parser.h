@@ -23,6 +23,7 @@ typedef struct CategoryList {
 
 CategoryList* parse_categories(char* file_path);
 
+void free_category(Category* category);
 void free_categories(CategoryList* list);
 
 #endif

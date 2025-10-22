@@ -52,17 +52,21 @@ CategoryList* parse_categories(char* file_path) {
 
             // initialize category
             Category* category = malloc(sizeof(Category));
+            if (!category) {
+                fprintf(stderr, "Memory allocation of category failed");
+                return clean_return(3, list, free_categories, file, fclose, category, free_category);
+            }
             category->name = get_name_from_line(line, 1, line_length - 2);
             if (!category->name) {
                 fprintf(stderr, "Memory allocation of category name failed");
-                return clean_return(2, list, free_categories, file, fclose);
+                return clean_return(3, list, free_categories, file, fclose, category, free_category);
             }
             category->size = 0;
             category->leftover_size = 32;
             category->elements = malloc(sizeof(char*) * category->leftover_size);
             if (!category->elements) {
                 fprintf(stderr, "Memory allocation of category elements failed");
-                return clean_return(2, list, free_categories, file, fclose);
+                return clean_return(3, list, free_categories, file, fclose, category, free_category);
             }
 
             // add category to list

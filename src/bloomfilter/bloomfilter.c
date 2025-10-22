@@ -3,7 +3,7 @@
 Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, uint8_t p) {
     uint32_t n8 = list->elements_size * p; // amount of bits (n = m * p)
     uint32_t n = (n8 + 7) / 8; // amount of bits / 8 rounded up
-    uint8_t k = p * log(2); // amount of hashfunctions (k = n/m * ln(2) rounded down = p * ln(2) rounded down)
+    uint8_t k = p > 1 ? p * log(2) : p; // amount of hashfunctions (k = n/m * ln(2) rounded down = p * ln(2) rounded down or rounded up in case of p == 1)
 
     Bloomfilter* bloomfilter = malloc(sizeof(Bloomfilter));
     if (!bloomfilter) {
@@ -11,6 +11,7 @@ Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, uint8_t p) {
         return clean_return(1, bloomfilter, free_bloomfilter);
     }
     bloomfilter->size = n;
+    bloomfilter->hash_amount = k;
     bloomfilter->bf = calloc(n, sizeof(uint8_t));
     if (!bloomfilter->bf) {
         fprintf(stderr, "Memory allocation of bloomfilter failed\n");

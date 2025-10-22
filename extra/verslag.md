@@ -69,6 +69,8 @@ elke cascade trap:
 - /
 
 elke bloomfilter binnen de trap:
+- aantal hashfuncties in bloomfilter (8 bits)
+- seeds voor hashfuncties (8 bits elk)
 - aantal bits in bloomfilter / 8 (32 bits)
 - bloomfilter bits
 
