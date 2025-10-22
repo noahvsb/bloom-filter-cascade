@@ -17,5 +17,7 @@ TEST_LIST = {
     { "writer: bloomfilter", test_write_bloomfilter },
     { "writer: end", test_write_end },
 
+    { "bloomfilter cascade: create", test_bloomfilter_cascade_create },
+
     { NULL, NULL }
 };

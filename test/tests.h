@@ -24,4 +24,8 @@ void test_write_start(void);
 void test_write_bloomfilter(void);
 void test_write_end(void);
 
+// bloomfilter cascade tests
+void test_bloomfilter_cascade_create(void);
+// no failcheck tests, because using p = 0 will have an infinite loop, since the list never grows smaller
+
 #endif
