@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
             CategoryList* list = parse_categories(command.data.train.inputFile);
             if (!list) exit(1);
             printf("Amount of elements in category list: %d\n", list->elements_size);
-            uint8_t status = create_bloomfilter_cascade(list, command.data.train.outputFile, atoi(argv[2])); // atoi(argv[2]) is temp, since it will fail for normal command usage
+            uint8_t status = create_bloomfilter_cascade(list, command.data.train.outputFile, 8);
             free_categories(list);
             if (status == 0) printf("Succesfully wrote bloomfilter cascade to: %s\n", command.data.train.outputFile);
             exit(status);
