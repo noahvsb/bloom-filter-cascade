@@ -48,6 +48,8 @@ void free_bloomfilter(Bloomfilter* bloomfilter) {
     if (bloomfilter) {
         if (bloomfilter->bf)
             free(bloomfilter->bf);
+        if (bloomfilter->hash_seeds)
+            free(bloomfilter->hash_seeds);
         free(bloomfilter);
     }
 }
