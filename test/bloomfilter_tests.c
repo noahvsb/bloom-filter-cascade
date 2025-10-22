@@ -3,7 +3,7 @@
 #include "acutest.h"
 #include "../src/bloomfilter/bloomfilter.h"
 
-void testBloomfilterCreate(void) {
+void test_bloomfilter_create(void) {
     char* file_path = "test/data/test.txt";
     CategoryList* list = parse_categories(file_path);
 
@@ -33,7 +33,7 @@ void testBloomfilterCreate(void) {
     free_bloomfilter(bloomfilter);
 }
 
-void testBloomfilterFailcheck(void) {
+void test_bloomfilter_create_failcheck(void) {
     char* file_path = "test/data/test.txt";
     CategoryList* list = parse_categories(file_path);
 

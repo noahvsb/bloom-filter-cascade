@@ -3,7 +3,7 @@
 #include "acutest.h"
 #include "../src/file/categories_parser.h"
 
-void testParseCategories(void) {
+void test_parse_categories(void) {
     char* file_path = "test/data/test.txt";
 
     CategoryList* list = parse_categories(file_path);
@@ -46,7 +46,7 @@ void testParseCategories(void) {
     free_categories(list);
 }
 
-void testParseCategoriesFailcheck(void) {
+void test_parse_categories_failcheck(void) {
     char* file_path = "test/data/unknown.txt";
     printf("\n");
     CategoryList* list = parse_categories(file_path);

@@ -5,7 +5,7 @@
 
 #define PROGRAM "./test_bloom_filter"
 
-void testHelpMessage(void) {
+void test_help_message(void) {
     int argc = 2;
     char* argv[] = { PROGRAM, "--help" };
     
@@ -15,7 +15,7 @@ void testHelpMessage(void) {
     TEST_CHECK(command.type == NONE);
 }
 
-void testTrainCommand(void) {
+void test_train_command(void) {
     int argc = 5;
     char* argv[] = { PROGRAM, "train", "-o", "cascade.file", "categories.file" };
 
@@ -26,7 +26,7 @@ void testTrainCommand(void) {
     TEST_CHECK(strcmp(command.data.train.inputFile, argv[4]) == 0);
 }
 
-void testClassifyCommand(void) {
+void test_classify_command(void) {
     int argc = 3;
     char* argv[] = { PROGRAM, "classify", "cascade.file" };
 

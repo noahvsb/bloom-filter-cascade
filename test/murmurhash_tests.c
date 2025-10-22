@@ -7,7 +7,7 @@
 #define SEED 123
 #define N 64
 
-void testMurmurhash(void) {
+void test_murmurhash(void) {
     char* test = "test1";
     uint8_t hash1 = murmurhash(test, strlen(test), SEED) % N;
     TEST_CHECK(hash1 < N);
