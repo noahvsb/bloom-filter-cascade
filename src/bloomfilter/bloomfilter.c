@@ -17,6 +17,16 @@ Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, uint8_t p) {
         fprintf(stderr, "Memory allocation of bloomfilter failed\n");
         return clean_return(1, bloomfilter, free_bloomfilter);
     }
+    bloomfilter->hash_seeds = calloc(k, sizeof(uint8_t));
+    if (!bloomfilter->hash_seeds) {
+        fprintf(stderr, "Memory allocation of bloomfilter hash seeds failed\n");
+        return clean_return(1, bloomfilter, free_bloomfilter);
+    }
+
+    // generate hash seeds
+    for (uint8_t i = 0; i < k; i++) {
+        bloomfilter->hash_seeds[i] = (uint8_t) (rand() % 256);
+    }
 
     for (int32_t i = 0; i < list->categories_size; i++) {
         if (i == except) continue;
@@ -24,8 +34,8 @@ Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, uint8_t p) {
         for (int32_t j = 0; j < category->size; j++) {
             char* element = category->elements[j];
             uint8_t element_length = strlen(element);
-            for (int8_t l = 0; l < k; l++) {
-                uint32_t hash = murmurhash(element, element_length, l) % (n * 8);
+            for (int8_t h = 0; h < k; h++) {
+                uint32_t hash = murmurhash(element, element_length, bloomfilter->hash_seeds[h]) % (n * 8);
                 bloomfilter->bf[hash / 8] |= (1ULL << (hash % 8));
             }
         }

@@ -46,8 +46,8 @@ uint8_t create_bloomfilter_cascade(CategoryList* list, char* file_path, uint8_t 
                     char* element = category->elements[j];
                     uint8_t element_length = strlen(element);
                     uint8_t count = 0;
-                    for (int8_t l = 0; l < bloomfilter->hash_amount; l++) {
-                        uint32_t hash = murmurhash(element, element_length, l) % (bloomfilter->size * 8);
+                    for (int8_t h = 0; h < bloomfilter->hash_amount; h++) {
+                        uint32_t hash = murmurhash(element, element_length, bloomfilter->hash_seeds[h]) % (bloomfilter->size * 8);
                         if (bloomfilter->bf[hash / 8] & (1ULL << (hash % 8))) count++;
                     }
                     if (count == bloomfilter->hash_amount) {

@@ -11,19 +11,20 @@ void testBloomfilterCreate(void) {
     uint32_t n = 39; // amount of bits / 8 = 39 * 8 / 8
     uint8_t k = 5; // amount of hash functions = 8 * ln(2) rounded down
     TEST_CHECK(bloomfilter->size == n);
+    TEST_CHECK(bloomfilter->hash_amount == k);
 
     char* element_in = "element3";
     uint8_t count = 0;
-    for (int8_t l = 0; l < k; l++) {
-        uint32_t hash = murmurhash(element_in, 8, l) % (n * 8);
+    for (int8_t h = 0; h < k; h++) {
+        uint32_t hash = murmurhash(element_in, 8, bloomfilter->hash_seeds[h]) % (n * 8);
         if (bloomfilter->bf[hash / 8] & (1ULL << (hash % 8))) count++;
     }
     TEST_CHECK(count == k);
 
     char* element_out = "element7";
     count = 0;
-    for (int8_t l = 0; l < k; l++) {
-        uint32_t hash = murmurhash(element_out, 8, l) % (n * 8);
+    for (int8_t h = 0; h < k; h++) {
+        uint32_t hash = murmurhash(element_out, 8, bloomfilter->hash_seeds[h]) % (n * 8);
         if (bloomfilter->bf[hash / 8] & (1ULL << (hash % 8))) count++;
     }
     TEST_CHECK(count < k);

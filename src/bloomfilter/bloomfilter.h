@@ -8,11 +8,13 @@
 #include "../file/categories_parser.h"
 #include "../hash/murmurhash.h"
 #include "../tools/clean_return.h"
+#include <time.h>
 
 typedef struct Bloomfilter {
     uint32_t size; // amount of bits / 8
     uint8_t hash_amount;
     uint8_t* bf;
+    uint8_t* hash_seeds;
 } Bloomfilter;
 
 /**
