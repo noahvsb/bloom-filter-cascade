@@ -1,6 +1,8 @@
 main.c
 arguments/arguments_parser.c
 arguments/arguments_parser.h
+classify/classify.c
+classify/classify.h
 bloomfilter/bloomfilter.c
 bloomfilter/bloomfilter.h
 bloomfilter/bloomfilter_cascade.c

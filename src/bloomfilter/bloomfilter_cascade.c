@@ -1,4 +1,4 @@
-#include "bloomfilter_cascade.h"
+#include "bloomfilter.h"
 
 void free_elements(Category* category) {
     if (category) {

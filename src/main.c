@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "arguments/arguments_parser.h"
 #include "file/categories_parser.h"
-#include "bloomfilter/bloomfilter_cascade.h"
+#include "bloomfilter/bloomfilter.h"
 
 int main(int argc, char** argv) {
     srand((unsigned) time(NULL));

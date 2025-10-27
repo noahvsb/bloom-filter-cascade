@@ -1,7 +1,7 @@
 #define TEST_NO_MAIN
 
 #include "acutest.h"
-#include "../src/bloomfilter/bloomfilter_cascade.h"
+#include "../src/bloomfilter/bloomfilter.h"
 
 void test_bloomfilter_cascade_create(void) {
     char* input_file_path = "test/data/test.txt";

@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include "../tools/clean_return.h"
 
 typedef struct Category {
     char* name;
@@ -20,6 +19,8 @@ typedef struct CategoryList {
     uint32_t leftover_size; // size of memory that has been allocated, but not yet initialized
     uint32_t elements_size;
 } CategoryList;
+
+#include "../tools/clean_return.h"
 
 CategoryList* parse_categories(char* file_path);
 
