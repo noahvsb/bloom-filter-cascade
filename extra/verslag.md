@@ -78,9 +78,9 @@ elke bloomfilter binnen de trap:
 - aantal bits in bloomfilter / 8 (32 bits)
 - bloomfilter bits (veelvoud van 8)
 
-indien de categorie horende bij een bloomfilter leeg is, is het aantal bits gewoon 0 en ga je verder, dit is beter dan elke keer alle nieuwe lege categoriëen aan te kondigen of nutteloze bloomfilters aan te maken
+indien de categorie horende bij een bloomfilter leeg is, zet je het aantal hashfuncties gewoon 0 en ga je verder, dit is beter dan elke keer alle nieuwe lege categoriëen aan te kondigen of nutteloze bloomfilters aan te maken
 
-eindigen met 32 1 bits, aangezien 32 0 bits een lege bloomfilter betekent
+eindigen met 8 x 1-bits, aangezien 8 x 0-bits een lege categorie betekent
 en dan de laatste niet lege categorie naam in ascii (8 * lengte bits) en een EOF, geen nut om een nieuwe trap te maken indien nog maar 1 categorie overschiet die niet leeg is
 (indien in dezelfde trap alle niet-lege categoriëen simultaan leeg geworden zijn, dan schrijf ik niets)
 

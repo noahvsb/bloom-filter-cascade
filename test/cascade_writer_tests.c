@@ -117,10 +117,10 @@ void test_write_end(void) {
 
     size_t read_size;
 
-    uint32_t end_bytes;
-    read_size = fread(&end_bytes, sizeof(uint32_t), 1, file);
+    uint8_t end_bytes;
+    read_size = fread(&end_bytes, sizeof(uint8_t), 1, file);
     TEST_CHECK(read_size == 1);
-    TEST_CHECK(end_bytes == 0xFFFFFFFF);
+    TEST_CHECK(end_bytes == 0xFF);
 
     uint8_t name_len = strlen(list->categories[0]->name);
 

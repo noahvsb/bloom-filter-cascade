@@ -27,7 +27,7 @@ void write_bloomfilter(Bloomfilter* bloomfilter, FILE* file) {
 }
 
 void write_end(char* category, FILE* file) {
-    fwrite(&(uint32_t){0xFFFFFFFF}, sizeof(uint32_t), 1, file);
+    fwrite(&(uint8_t){0xFF}, sizeof(uint8_t), 1, file);
     fwrite(category, sizeof(char), strlen(category), file);
     fclose(file);
 }

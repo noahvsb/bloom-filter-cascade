@@ -6,10 +6,12 @@ classify/classify.h
 bloomfilter/bloomfilter.c
 bloomfilter/bloomfilter.h
 bloomfilter/bloomfilter_cascade.c
-file/categories_parser.c
-file/categories_parser.h
+file/cascade_parser.c
+file/cascade_parser.h
 file/cascade_writer.c
 file/cascade_writer.h
+file/categories_parser.c
+file/categories_parser.h
 hash/murmurhash.c
 hash/murmurhash.h
 tools/clean_return.c
