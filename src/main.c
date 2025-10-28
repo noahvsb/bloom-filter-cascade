@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "arguments/arguments_parser.h"
 #include "file/categories_parser.h"
+#include "file/cascade_parser.h"
 #include "bloomfilter/bloomfilter.h"
 
 int main(int argc, char** argv) {
@@ -16,8 +17,11 @@ int main(int argc, char** argv) {
             free_categories(list);
             exit(status);
         case CLASSIFY:
-            // TODO
-            printf("input: %s\n", command.data.classify.inputFile);
+            Cascade* cascade = parse_cascade(command.data.classify.inputFile);
+            printf("Amount of categories in cascade: %d\n", cascade->categories_size);
+            for (uint32_t i = 0; i < cascade->categories_size; i++) {
+                printf("Category %d: %s\n", i, cascade->categories_names[i]);
+            }
             break;
         default:
             exit(1);

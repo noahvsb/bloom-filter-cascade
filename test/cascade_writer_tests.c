@@ -19,20 +19,21 @@ void test_write_start(void) {
 
     size_t read_size;
 
-    uint32_t category_count;
-    read_size = fread(&category_count, sizeof(uint32_t), 1, file);
+    uint32_t category_size;
+    read_size = fread(&category_size, sizeof(uint32_t), 1, file);
     TEST_CHECK(read_size == 1);
-    TEST_CHECK(category_count == 5);
+    TEST_CHECK(category_size == 5);
 
-    for (uint32_t i = 0; i < category_count; i++) {
-        uint8_t len;
-        read_size = fread(&len, sizeof(uint8_t), 1, file);
+    for (uint32_t i = 0; i < category_size; i++) {
+        uint8_t length;
+        read_size = fread(&length, sizeof(uint8_t), 1, file);
         TEST_CHECK(read_size == 1);
+        TEST_CHECK(length == 9);
 
-        char name[256];
-        read_size = fread(name, sizeof(char), len, file);
-        TEST_CHECK(read_size == len);
-        name[len] = '\0';
+        char name[32];
+        read_size = fread(name, sizeof(char), length, file);
+        TEST_CHECK(read_size == length);
+        name[length] = '\0';
 
         char expected[32];
         sprintf(expected, "category%u", i);
