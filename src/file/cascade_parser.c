@@ -11,6 +11,11 @@ Cascade* parse_cascade(char* file_path) {
         fprintf(stderr, "Failed to allocate cascade\n");
         return NULL;
     }
+    cascade->categories_size = 0;
+    cascade->cascade_steps = 0;
+    cascade->categories_names = NULL;
+    cascade->bloomfilters = NULL;
+    cascade->last_category_name = NULL;
 
     FILE* file = fopen(file_path, "rb");
     if (!file) {
@@ -149,7 +154,7 @@ Cascade* parse_cascade(char* file_path) {
         name[length] = '\0';
 
         cascade->last_category_name = name;
-    } else cascade->last_category_name = NULL;
+    }
 
     fclose(file);
 
