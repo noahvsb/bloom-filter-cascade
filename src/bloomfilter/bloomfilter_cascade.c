@@ -16,7 +16,7 @@ uint8_t create_bloomfilter_cascade(CategoryList* list, char* file_path, uint8_t 
 
     uint32_t empty_count = 0;
 
-    while (empty_count < list->categories_size) {
+    while (empty_count < list->categories_size - 1) {
         for (uint32_t i = 0; i < list->categories_size; i++) {
             Category* category = list->categories[i];
             uint32_t old_size = category->size;
