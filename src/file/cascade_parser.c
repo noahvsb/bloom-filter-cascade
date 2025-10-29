@@ -12,7 +12,7 @@ Cascade* parse_cascade(char* file_path) {
         return NULL;
     }
     cascade->categories_size = 0;
-    cascade->cascade_steps = 0;
+    cascade->steps = 0;
     cascade->categories_names = NULL;
     cascade->bloomfilters = NULL;
     cascade->last_category_name = NULL;
@@ -136,7 +136,7 @@ Cascade* parse_cascade(char* file_path) {
         i++;
     }
 
-    cascade->cascade_steps = i;
+    cascade->steps = i;
 
     // parse last categories name
     uint8_t length;
@@ -170,7 +170,7 @@ void free_cascade(Cascade* cascade) {
             free(cascade->categories_names);
         }
         if (cascade->bloomfilters) {
-            for (uint32_t i = 0; i < cascade->cascade_steps * cascade->categories_size; i++)
+            for (uint32_t i = 0; i < cascade->steps * cascade->categories_size; i++)
                 if (cascade->bloomfilters[i])
                     free_bloomfilter(cascade->bloomfilters[i]);
             free(cascade->bloomfilters);

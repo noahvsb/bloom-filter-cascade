@@ -9,7 +9,7 @@
 typedef struct Cascade {
     uint32_t categories_size;
     char** categories_names;
-    uint32_t cascade_steps;
+    uint32_t steps;
     Bloomfilter** bloomfilters;
     char* last_category_name;
 } Cascade;

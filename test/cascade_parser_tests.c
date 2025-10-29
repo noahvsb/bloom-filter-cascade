@@ -16,9 +16,9 @@ void test_parse_cascade(void) {
         TEST_CHECK(strcmp(cascade->categories_names[i], expected) == 0);
     }
 
-    TEST_CHECK(cascade->cascade_steps == 2);
+    TEST_CHECK(cascade->steps == 2);
 
-    for (uint32_t i = 0; i < cascade->cascade_steps * cascade->categories_size; i++) {
+    for (uint32_t i = 0; i < cascade->steps * cascade->categories_size; i++) {
         Bloomfilter* bloomfilter = cascade->bloomfilters[i];
         TEST_CHECK(bloomfilter == NULL || (bloomfilter->hash_amount == 1 && bloomfilter->size > 0));
         // actual content of bloomfilters will be checked in classify_test.c
