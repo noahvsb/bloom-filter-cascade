@@ -39,9 +39,8 @@ void test_parse_cascade_failcheck(void) {
 
     free_cascade(cascade);
 
-    file_path = "test/data/temp.file";
-
     // create an empty file
+    file_path = "test/data/temp_empty.file";
     fclose(fopen(file_path, "wb"));
 
     cascade = parse_cascade(file_path);

@@ -1,6 +1,12 @@
 #ifndef CLASSIFY_H
 #define CLASSIFY_H
 
-void classify(char* file_path);
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+#include "../file/cascade_parser.h"
+
+void classify(Cascade* cascade);
 
 #endif

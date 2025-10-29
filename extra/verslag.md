@@ -86,7 +86,7 @@ indien de categorie horende bij een bloomfilter leeg is, zet je het aantal hashf
 
 ## limitaties
 
-Voor de categorie namen is er een limitatie van 256 chars
+Voor de categorie namen is er een limitatie van 256 chars bij zowel `train` als `classify`
 
 Voor de nummers (aantal elementen, aantal bits ...) is er een limitatie van 32 bits (0 - 4,294,967,295)
 
