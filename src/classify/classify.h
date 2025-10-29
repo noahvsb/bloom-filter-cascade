@@ -8,6 +8,8 @@
 #include <stdbool.h>
 #include "../file/cascade_parser.h"
 
-void classify(Cascade* cascade);
+void run_classify(Cascade* cascade);
+
+char* classify(Cascade* cascade, char* element_name);
 
 #endif

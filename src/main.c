@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
             exit(status);
         case CLASSIFY:
             Cascade* cascade = parse_cascade(command.data.classify.inputFile);
-            classify(cascade);
+            run_classify(cascade);
             free(cascade);
             break;
         default:

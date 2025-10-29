@@ -88,6 +88,9 @@ indien de categorie horende bij een bloomfilter leeg is, zet je het aantal hashf
 
 Voor de categorie namen is er een limitatie van 256 chars bij zowel `train` als `classify`
 
+Indien een ingegeven element bij `classify` niet in de volledige verzameling zit en niet alle categoriëen op hetzelfde moment leeg zijn geworden bij het bouwen van de cascade, dan zal deze geclassificeerd worden als de laatste niet-lege categorie na het bouwen van de cascade.
+Dus op deze manier wel false positives, maar ja ge moet maar geen elementen ingeven die niet in de volledige verzameling zitten.
+
 Voor de nummers (aantal elementen, aantal bits ...) is er een limitatie van 32 bits (0 - 4,294,967,295)
 
 Bv. het aantal elementen in `large.txt` is 25,000,000 en pas vanaf we een $p \geq 172$ kiezen zal het aantal bits daar groter zijn dan de limitatie, maar dit is een onrealistische situatie, in quasi alle gevallen zal $p \leq 10$ zijn en dan kunnen we 429,496,729 elementen hebben, dus deze limiet is voldoende. 
