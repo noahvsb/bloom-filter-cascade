@@ -14,7 +14,7 @@ void test_bloomfilter_cascade_create(void) {
 
     // not checking the content of the cascade file:
     // - the file writing is tested in cascade_writer_tests.c
-    // - the correctness will be tested in tests related to the classify command (TODO: add the related test file path)
+    // - the correctness will be tested in classify_test.c
 
     free_categories(list);
     remove(output_file_path);

@@ -18,6 +18,7 @@ int main(int argc, char** argv) {
             exit(status);
         case CLASSIFY:
             Cascade* cascade = parse_cascade(command.data.classify.inputFile);
+            // temp
             printf("Amount of categories in cascade: %d\n", cascade->categories_size);
             for (uint32_t i = 0; i < cascade->categories_size; i++) {
                 printf("Category %d: %s\n", i, cascade->categories_names[i]);
@@ -27,6 +28,7 @@ int main(int argc, char** argv) {
                 printf("bloomfilter %d size: %d\n", i, cascade->bloomfilters[i] ? cascade->bloomfilters[i]->size * 8 : 0);
             }
             printf("Last category name: %s\n", cascade->last_category_name ? cascade->last_category_name : "NULL");
+            // untemp
             free(cascade);
             break;
         default:

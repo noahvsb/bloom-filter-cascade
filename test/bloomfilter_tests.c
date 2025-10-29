@@ -37,7 +37,7 @@ void test_bloomfilter_create_failcheck(void) {
     char* file_path = "test/data/test.txt";
     CategoryList* list = parse_categories(file_path);
 
-    // should return an empty bloomfilter, not throw an error
+    // should just return an empty bloomfilter, not print an error
     Bloomfilter* bloomfilter = create_bloomfilter(list, -1, 0);
     TEST_CHECK(bloomfilter->size == 0);
     TEST_CHECK(bloomfilter->bf != NULL);

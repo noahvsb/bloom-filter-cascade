@@ -47,8 +47,9 @@ void test_parse_categories(void) {
 }
 
 void test_parse_categories_failcheck(void) {
-    char* file_path = "test/data/unknown.txt";
     printf("\n");
+    
+    char* file_path = "test/data/unknown.txt";
     CategoryList* list = parse_categories(file_path);
     TEST_CHECK(list == NULL);
 

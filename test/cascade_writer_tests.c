@@ -19,12 +19,12 @@ void test_write_start(void) {
 
     size_t read_size;
 
-    uint32_t category_size;
-    read_size = fread(&category_size, sizeof(uint32_t), 1, file);
+    uint32_t categories_size;
+    read_size = fread(&categories_size, sizeof(uint32_t), 1, file);
     TEST_CHECK(read_size == 1);
-    TEST_CHECK(category_size == 5);
+    TEST_CHECK(categories_size == 5);
 
-    for (uint32_t i = 0; i < category_size; i++) {
+    for (uint32_t i = 0; i < categories_size; i++) {
         uint8_t length;
         read_size = fread(&length, sizeof(uint8_t), 1, file);
         TEST_CHECK(read_size == 1);

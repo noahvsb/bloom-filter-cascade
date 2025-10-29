@@ -151,6 +151,8 @@ Cascade* parse_cascade(char* file_path) {
         cascade->last_category_name = name;
     } else cascade->last_category_name = NULL;
 
+    fclose(file);
+
     return cascade;
 }
 
@@ -161,6 +163,12 @@ void free_cascade(Cascade* cascade) {
                 if (cascade->categories_names[i])
                     free(cascade->categories_names[i]);
             free(cascade->categories_names);
+        }
+        if (cascade->bloomfilters) {
+            for (uint32_t i = 0; i < cascade->cascade_steps * cascade->categories_size; i++)
+                if (cascade->bloomfilters[i])
+                    free_bloomfilter(cascade->bloomfilters[i]);
+            free(cascade->bloomfilters);
         }
         if (cascade->last_category_name)
             free(cascade->last_category_name);
