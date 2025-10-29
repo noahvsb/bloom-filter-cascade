@@ -14,6 +14,6 @@ void write_bloomfilter(Bloomfilter* bloomfilter, FILE* file);
 /**
  * @param category: name of the only non-empty category left
  */
-void write_end(char* category, FILE* file);
+void write_end(char* category_name, FILE* file);
 
 #endif

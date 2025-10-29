@@ -14,7 +14,7 @@ Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, uint8_t p) {
     bloomfilter->hash_amount = k;
     bloomfilter->bf = calloc(n, sizeof(uint8_t));
     if (!bloomfilter->bf) {
-        fprintf(stderr, "Memory allocation of bloomfilter failed\n");
+        fprintf(stderr, "Memory allocation of bloomfilter bits failed\n");
         return clean_return(1, bloomfilter, free_bloomfilter);
     }
     bloomfilter->hash_seeds = calloc(k, sizeof(uint8_t));

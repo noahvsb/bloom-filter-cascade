@@ -123,7 +123,10 @@ void test_write_end(void) {
     TEST_CHECK(read_size == 1);
     TEST_CHECK(end_bytes == 0xFF);
 
-    uint8_t name_len = strlen(list->categories[0]->name);
+    uint8_t name_len;
+    read_size = fread(&name_len, sizeof(uint8_t), 1, file);
+    TEST_CHECK(read_size == 1);
+    TEST_CHECK(name_len == strlen(list->categories[0]->name));
 
     char name[256];
     read_size = fread(name, sizeof(char), name_len, file);
