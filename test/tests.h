@@ -31,4 +31,7 @@ void test_bloomfilter_cascade_create(void);
 void test_parse_cascade(void);
 void test_parse_cascade_failcheck(void);
 
+// classify tests
+void test_classify(void);
+
 #endif

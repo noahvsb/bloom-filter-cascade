@@ -9,6 +9,8 @@ char* classify(Cascade* cascade, char* element_name) {
         for (uint32_t j = 0; j < cascade->categories_size && !done; j++) {
             Bloomfilter* bloomfilter = cascade->bloomfilters[i * cascade->categories_size + j];
 
+            if (bloomfilter == NULL) continue;
+
             uint8_t count = 0;
             for (int8_t h = 0; h < bloomfilter->hash_amount; h++) {
                 uint32_t hash = murmurhash(element_name, strlen(element_name), bloomfilter->hash_seeds[h]) % (bloomfilter->size * 8);

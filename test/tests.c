@@ -22,5 +22,7 @@ TEST_LIST = {
     { "cascade parser: parse", test_parse_cascade },
     { "cascade parser: parse failcheck", test_parse_cascade_failcheck },
 
+    { "classify: classify", test_classify },
+
     { NULL, NULL }
 };
