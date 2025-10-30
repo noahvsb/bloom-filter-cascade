@@ -33,5 +33,6 @@ void test_parse_cascade_failcheck(void);
 
 // classify tests
 void test_classify(void);
+void test_classify_large(void);
 
 #endif

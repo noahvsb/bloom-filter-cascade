@@ -23,6 +23,7 @@ TEST_LIST = {
     { "cascade parser: parse failcheck", test_parse_cascade_failcheck },
 
     { "classify: classify", test_classify },
+    // { "classify: classify large", test_classify_large }, // uncomment only when you want to specifically run this test and have data/large.txt and data/large.file, then run with `make test large`, TODO: have a `make large_test` that only runs this large test with in a different main with a different command
 
     { NULL, NULL }
 };
