@@ -9,13 +9,15 @@ TEST_DIR := test
 # Targets
 SRC_TARGET := Bloom_filter_cascade
 TEST_TARGET := run_tests
+TEST_LARGE_TARGET := run_large_test
 MASSIF_TARGET := memory.ms
 
 # Source files
 SRC_FILES := $(shell find $(SRC_DIR) -name '*.c')
-TEST_FILES := $(shell find $(TEST_DIR) -name '*.c')
+TEST_FILES := $(filter-out $(TEST_DIR)/test_large.c, $(shell find $(TEST_DIR) -name '*.c')) # all in TEST_DIR without large_test.c
+TEST_LARGE_FILES := $(TEST_DIR)/test_large.c $(TEST_DIR)/classify_tests.c
 
-.PHONY: all debug build build_debug build_test test valgrind memcheck massif clean
+.PHONY: all debug build build_debug build_test test build_test_large test_large valgrind memcheck massif clean
 
 all: build test
 
@@ -29,7 +31,7 @@ build_debug: $(SRC_FILES)
 	$(CC) $(CFLAGS) -g $^ -o $(SRC_TARGET)
 	@echo "✅ compiled $(SRC_TARGET) with debug flag"
 
-build_test: $(TEST_FILES) $(filter-out $(SRC_DIR)/main.c, $(SRC_FILES)) # all test files + source files without main
+build_test: $(TEST_FILES) $(filter-out $(SRC_DIR)/main.c, $(SRC_FILES)) # all test files + source files without main.c
 	$(CC) $(CFLAGS) -g $^ -o $(TEST_TARGET)
 	@echo "✅ compiled $(TEST_TARGET)"
 
@@ -37,6 +39,14 @@ test: build_test
 	@ARGS="$(filter-out $@,$(MAKECMDGOALS))"; \
 	./$(TEST_TARGET) $$ARGS
 	@echo "✅ ran tests"
+
+build_test_large: $(TEST_LARGE_FILES) $(filter-out $(SRC_DIR)/main.c, $(SRC_FILES)) # all large test files + source files without main.c
+	$(CC) $(CFLAGS) -g $^ -o $(TEST_LARGE_TARGET)
+	@echo "✅ compiled $(TEST_TARGET)"
+
+test_large: build_test_large
+	./$(TEST_LARGE_TARGET)
+	@echo "✅ ran large test"
 
 valgrind: massif memcheck
 
@@ -50,5 +60,5 @@ memcheck: build_test
 	@echo "✅ valgrind memcheck done"
 
 clean:
-	rm -f $(SRC_TARGET) $(TEST_TARGET) $(MASSIF_TARGET)
+	rm -f $(SRC_TARGET) $(TEST_TARGET) $(TEST_LARGE_TARGET) $(MASSIF_TARGET)
 	@echo "✅ removed target binaries"

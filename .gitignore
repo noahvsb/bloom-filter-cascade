@@ -9,6 +9,7 @@
 *.elf
 Bloom_filter_cascade
 run_tests
+run_large_test
 
 # Linker output
 *.ilk
