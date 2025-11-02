@@ -32,11 +32,12 @@ void run_classify(Cascade* cascade) {
     while (1) {
         char element_name[256];
 
-        uint8_t scan_size = scanf("%s", element_name);
-        if (scan_size != 1) {
-            fprintf(stderr, "Failed to scan element name\n");
+        if (fgets(element_name, sizeof(element_name), stdin) == NULL) {
+            fprintf(stderr, "Failed to read input\n");
             return;
         }
+
+        element_name[strcspn(element_name, "\n")] = '\0';
 
         if (strcmp(element_name, ":q") == 0) {
             printf("Done!\n");
