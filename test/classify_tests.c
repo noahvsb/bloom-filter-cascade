@@ -24,9 +24,9 @@ void test_classify_template(char* categories_file_path, char* cascade_file_path)
 }
 
 void test_classify_large(void) {
-    test_classify_template("data/large.txt", "data/large.file");
+    test_classify_template("data/large.txt", "data/large.bfc");
 }
 
 void test_classify(void) {
-    test_classify_template("test/data/test.txt", "test/data/test.file");
+    test_classify_template("test/data/test.txt", "test/data/test.bfc");
 }

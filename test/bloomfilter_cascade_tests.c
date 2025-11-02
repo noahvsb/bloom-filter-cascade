@@ -5,7 +5,7 @@
 
 void test_bloomfilter_cascade_create(void) {
     char* input_file_path = "test/data/test.txt";
-    char* output_file_path = "test/data/temp.file";
+    char* output_file_path = "test/data/temp.bfc";
     CategoryList* list = parse_categories(input_file_path);
 
     printf("\n");

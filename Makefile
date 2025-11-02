@@ -6,6 +6,10 @@ CFLAGS := -std=c17 -O3 -Wall -Werror
 SRC_DIR := src
 TEST_DIR := test
 
+# Data
+LARGE_TXT := data/large.txt
+LARGE_BFC := data/large.bfc
+
 # Targets
 SRC_TARGET := Bloom_filter_cascade
 TEST_TARGET := run_tests
@@ -17,7 +21,7 @@ SRC_FILES := $(shell find $(SRC_DIR) -name '*.c')
 TEST_FILES := $(filter-out $(TEST_DIR)/test_large.c, $(shell find $(TEST_DIR) -name '*.c')) # all in TEST_DIR without large_test.c
 TEST_LARGE_FILES := $(TEST_DIR)/test_large.c $(TEST_DIR)/classify_tests.c
 
-.PHONY: all debug build build_debug build_test test build_test_large test_large valgrind memcheck massif clean
+.PHONY: all debug build build_debug build_test test build_test_large train_large test_large valgrind memcheck massif clean
 
 all: build test
 
@@ -44,7 +48,11 @@ build_test_large: $(TEST_LARGE_FILES) $(filter-out $(SRC_DIR)/main.c, $(SRC_FILE
 	$(CC) $(CFLAGS) -g $^ -o $(TEST_LARGE_TARGET)
 	@echo "✅ compiled $(TEST_TARGET)"
 
-test_large: build_test_large
+train_large:
+	./$(SRC_TARGET) train $(LARGE_TXT) -o $(LARGE_BFC)
+	@echo "✅ trained $(LARGE_BFC)"
+
+test_large: build build_test_large train_large
 	./$(TEST_LARGE_TARGET)
 	@echo "✅ ran large test"
 

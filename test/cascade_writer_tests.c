@@ -5,7 +5,7 @@
 
 void test_write_start(void) {
     char* input_file_path = "test/data/test.txt";
-    char* output_file_path = "test/data/temp.file";
+    char* output_file_path = "test/data/temp.bfc";
     CategoryList* list = parse_categories(input_file_path);
 
     FILE* file = write_start(list, output_file_path);
@@ -48,7 +48,7 @@ void test_write_start(void) {
 
 void test_write_bloomfilter(void) {
     char* input_file_path = "test/data/test.txt";
-    char* output_file_path = "test/data/temp.file";
+    char* output_file_path = "test/data/temp.bfc";
     CategoryList* list = parse_categories(input_file_path);
     Bloomfilter* bloomfilter = create_bloomfilter(list, -1, 8);
 
@@ -100,7 +100,7 @@ void test_write_bloomfilter(void) {
 
 void test_write_end(void) {
     char* input_file_path = "test/data/test.txt";
-    char* output_file_path = "test/data/temp.file";
+    char* output_file_path = "test/data/temp.bfc";
     CategoryList* list = parse_categories(input_file_path);
 
     FILE* file = fopen(output_file_path, "wb");

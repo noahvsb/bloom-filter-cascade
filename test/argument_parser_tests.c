@@ -17,7 +17,7 @@ void test_help_message(void) {
 
 void test_train_command(void) {
     int argc = 5;
-    char* argv[] = { PROGRAM, "train", "-o", "cascade.file", "categories.file" };
+    char* argv[] = { PROGRAM, "train", "-o", "cascade.bfc", "categories.txt" };
 
     Command command = parse_arguments(argc, argv);
 
@@ -28,7 +28,7 @@ void test_train_command(void) {
 
 void test_classify_command(void) {
     int argc = 3;
-    char* argv[] = { PROGRAM, "classify", "cascade.file" };
+    char* argv[] = { PROGRAM, "classify", "cascade.bfc" };
 
     Command command = parse_arguments(argc, argv);
 

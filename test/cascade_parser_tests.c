@@ -4,7 +4,7 @@
 #include "../src/file/cascade_parser.h"
 
 void test_parse_cascade(void) {
-    char* file_path = "test/data/test.file"; // bloomfilter cascade of test/data/test.txt with p = 1
+    char* file_path = "test/data/test.bfc"; // bloomfilter cascade of test/data/test.txt with p = 1
 
     Cascade* cascade = parse_cascade(file_path);
     TEST_CHECK(cascade->categories_size == 5);
@@ -32,14 +32,14 @@ void test_parse_cascade(void) {
 void test_parse_cascade_failcheck(void) {
     printf("\n");
 
-    char* file_path = "test/data/unknown.file";
+    char* file_path = "test/data/unknown.bfc";
     Cascade* cascade = parse_cascade(file_path);
     TEST_CHECK(cascade == NULL);
 
     free_cascade(cascade);
 
     // create an empty file
-    file_path = "test/data/temp_empty.file";
+    file_path = "test/data/temp_empty.bfc";
     fclose(fopen(file_path, "wb"));
 
     cascade = parse_cascade(file_path);
