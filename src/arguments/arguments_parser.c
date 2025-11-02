@@ -14,6 +14,7 @@ Command help_message(char* program) {
     printf("    <file>       input file (first argument after 'classify')\n");
     printf("  Example:\n");
     printf("    %s classify Bloom_filters.file\n", program);
+    printf("  Note: to end the classify execution, type :q\n");
     return (Command) { NONE };
 }
 

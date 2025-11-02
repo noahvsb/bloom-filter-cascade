@@ -1,6 +1,8 @@
 #include "clean_return.h"
 
 void* clean_return(uint8_t count, ...) {
+    fprintf(stderr, "Freeing allocated memory...\n");
+
     va_list args;
     va_start(args, count);
 

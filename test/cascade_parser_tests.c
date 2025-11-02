@@ -16,16 +16,15 @@ void test_parse_cascade(void) {
         TEST_CHECK(strcmp(cascade->categories_names[i], expected) == 0);
     }
 
-    TEST_CHECK(cascade->steps == 2);
+    TEST_CHECK(cascade->bloomfilters_size == 14);
 
-    for (uint32_t i = 0; i < cascade->steps * cascade->categories_size; i++) {
+    for (uint32_t i = 0; i < cascade->bloomfilters_size; i++) {
         Bloomfilter* bloomfilter = cascade->bloomfilters[i];
         TEST_CHECK(bloomfilter == NULL || (bloomfilter->hash_amount == 1 && bloomfilter->size > 0));
         // actual content of bloomfilters will be checked in classify_test.c
     }
   
-    // no last category name, all were empty after the second step (makes sense because there weren't a lot of elements)
-    TEST_CHECK(cascade->last_category_name == NULL);
+    TEST_CHECK(strcmp(cascade->last_category_name, "category4") == 0);
 
     free_cascade(cascade);
 }

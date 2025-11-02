@@ -14,20 +14,25 @@ uint8_t create_bloomfilter_cascade(CategoryList* list, char* file_path, uint8_t 
     FILE* file = write_start(list, file_path);
     if (!file) return 1;
 
+    bool first_step = true;
     uint32_t empty_count = 0;
 
     while (empty_count < list->categories_size - 1) {
-        for (uint32_t i = 0; i < list->categories_size; i++) {
+        for (uint32_t i = 0; i < list->categories_size && empty_count < list->categories_size - 1; i++) {
             Category* category = list->categories[i];
             uint32_t old_size = category->size;
 
             // just write 8 x 0-bits if size is 0
             if (old_size == 0) {
                 fwrite(&(uint8_t){0}, sizeof(uint8_t), 1, file);
-                if (i == 0) empty_count++;
+                if (first_step) empty_count++;
             } else {
                 // create and write bloomfilter
                 Bloomfilter* bloomfilter = create_bloomfilter(list, i, p);
+                if (!bloomfilter) {
+                    clean_return(1, file, fclose);
+                    return 1;
+                }
                 write_bloomfilter(bloomfilter, file);
                 printf("Wrote bloomfilter for %s to file\n    - size: %d -- hash: %d\n", list->categories[i]->name, bloomfilter->size, bloomfilter->hash_amount);
                 
@@ -88,6 +93,8 @@ uint8_t create_bloomfilter_cascade(CategoryList* list, char* file_path, uint8_t 
                 if (new_size == 0) empty_count++;
             }
         }
+
+        first_step = false;
     }
 
     char* non_empty_name = "";

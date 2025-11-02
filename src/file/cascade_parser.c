@@ -12,7 +12,7 @@ Cascade* parse_cascade(char* file_path) {
         return NULL;
     }
     cascade->categories_size = 0;
-    cascade->steps = 0;
+    cascade->bloomfilters_size = 0;
     cascade->categories_names = NULL;
     cascade->bloomfilters = NULL;
     cascade->last_category_name = NULL;
@@ -61,6 +61,7 @@ Cascade* parse_cascade(char* file_path) {
         return clean_return(2, cascade, free_cascade, file, fclose);
     }
 
+    uint32_t unfinished_amount = 0;
     uint32_t i = 0;
 
     uint8_t hash_amount;
@@ -82,6 +83,11 @@ Cascade* parse_cascade(char* file_path) {
         // parse the bloomfilters for this step
         for (uint32_t j = 0; j < category_size; j++) {
             Bloomfilter* bloomfilter = NULL;
+
+            if (hash_amount == 0xFF) {
+                unfinished_amount = category_size - j;
+                break;
+            }
 
             // non-empty bloomfilter
             if (hash_amount != 0) {
@@ -136,7 +142,7 @@ Cascade* parse_cascade(char* file_path) {
         i++;
     }
 
-    cascade->steps = i;
+    cascade->bloomfilters_size = i * cascade->categories_size - unfinished_amount;
 
     // parse last categories name
     uint8_t length;
@@ -170,7 +176,7 @@ void free_cascade(Cascade* cascade) {
             free(cascade->categories_names);
         }
         if (cascade->bloomfilters) {
-            for (uint32_t i = 0; i < cascade->steps * cascade->categories_size; i++)
+            for (uint32_t i = 0; i < cascade->bloomfilters_size; i++)
                 if (cascade->bloomfilters[i])
                     free_bloomfilter(cascade->bloomfilters[i]);
             free(cascade->bloomfilters);

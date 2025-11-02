@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdio.h>
 
 typedef void (*cleanup_func)(void *); // generic custom cleanup function type
 

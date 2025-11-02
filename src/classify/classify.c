@@ -5,22 +5,20 @@ char* classify(Cascade* cascade, char* element_name) {
     char* category_name = NULL;
 
     bool done = false;
-    for (uint32_t i = 0; i < cascade->steps && !done; i++) {
-        for (uint32_t j = 0; j < cascade->categories_size && !done; j++) {
-            Bloomfilter* bloomfilter = cascade->bloomfilters[i * cascade->categories_size + j];
+    for (uint32_t i = 0; i < cascade->bloomfilters_size && !done; i++) {
+        Bloomfilter* bloomfilter = cascade->bloomfilters[i];
 
-            if (bloomfilter == NULL) continue;
+        if (bloomfilter == NULL) continue;
 
-            uint8_t count = 0;
-            for (int8_t h = 0; h < bloomfilter->hash_amount; h++) {
-                uint32_t hash = murmurhash(element_name, strlen(element_name), bloomfilter->hash_seeds[h]) % (bloomfilter->size * 8);
-                if (bloomfilter->bf[hash / 8] & (1ULL << (hash % 8))) count++;
-            }
+        uint8_t count = 0;
+        for (int8_t h = 0; h < bloomfilter->hash_amount; h++) {
+            uint32_t hash = murmurhash(element_name, strlen(element_name), bloomfilter->hash_seeds[h]) % (bloomfilter->size * 8);
+            if (bloomfilter->bf[hash / 8] & (1ULL << (hash % 8))) count++;
+        }
 
-            if (count != bloomfilter->hash_amount) {
-                category_name = cascade->categories_names[j];
-                done = true;
-            }
+        if (count != bloomfilter->hash_amount) {
+            category_name = cascade->categories_names[i % cascade->categories_size];
+            done = true;
         }
     }
 
