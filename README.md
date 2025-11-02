@@ -212,8 +212,11 @@ De `Dockerfile` en bijhorende bronbestanden die SubGIT gebruikt, kun je vinden i
 
 ```sh
 docker build . -t ad3-project-2025 # hoef je maar één keer te doen
-sudo docker run -it --rm --mount type=bind,source=../projectAD3,destination=/submission,readonly ad3-project-2025
+docker run -it --rm --mount type=bind,source={PAD},destination=/submission,readonly ad3-project-2025
 ```
+
+Waarbij `{PAD}` vervangen dient te worden door het absolute pad naar de hoofdmap
+(niet `src`) van je code.
 
 ### SubGIT
 
