@@ -1,10 +1,9 @@
 #include "bloomfilter.h"
 
-Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, uint8_t p) {
+Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, uint8_t k) {
     uint32_t except_size = except < 0 || except >= list->categories_size ? 0 : list->categories[except]->size;
-    uint32_t n8 = (list->elements_size - except_size) * p; // amount of bits (n = m * p)
+    uint32_t n8 = (list->elements_size - except_size) * k / log(2); // amount of bits (n = m * k / ln 2 rounded down)
     uint32_t n = (n8 + 7) / 8; // amount of bits / 8 rounded up
-    uint8_t k = p > 1 ? p * log(2) : p; // amount of hashfunctions (k = n/m * ln(2) rounded down = p * ln(2) rounded down or rounded up in case of p == 1)
 
     Bloomfilter* bloomfilter = malloc(sizeof(Bloomfilter));
     if (!bloomfilter) {

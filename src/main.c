@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
             CategoryList* list = parse_categories(command.data.train.inputFile);
             if (!list) exit(1);
             printf("Amount of elements in category list: %d\n", list->elements_size);
-            uint8_t status = create_bloomfilter_cascade(list, command.data.train.outputFile, 5);
+            uint8_t status = create_bloomfilter_cascade(list, command.data.train.outputFile, 3);
             free_categories(list);
             exit(status);
         case CLASSIFY:

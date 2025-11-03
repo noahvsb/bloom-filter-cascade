@@ -26,21 +26,21 @@ typedef struct Bloomfilter {
  * 
  * @param list: category list of all categories
  * @param except: the category that should be left out of the bloomfilter, put -1 if you don't want to exclude a category
- * @param p: the chance for false positives will be lower or equal than 1 / 2^p (with p > 1)
+ * @param k: the chance for false positives will be around 1 / 2^k (with k > 0)
  */
-Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, uint8_t p);
+Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, uint8_t k);
 
 /**
  * creates a bloomfilter cascade, which it writes to file_path
  * 
  * @param list: category list of all categories
  * @param file_path: file path to write the cascade to
- * @param p: same as p in create_bloomfilter()
+ * @param k: same as k in create_bloomfilter()
  * 
  * @returns 0 if success
  * @returns 1 if fail
 */
-uint8_t create_bloomfilter_cascade(CategoryList* list, char* file_path, uint8_t p);
+uint8_t create_bloomfilter_cascade(CategoryList* list, char* file_path, uint8_t k);
 
 void free_bloomfilter(Bloomfilter* bloomfilter);
 
