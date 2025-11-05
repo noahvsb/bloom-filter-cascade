@@ -46,7 +46,7 @@ test: build_test
 
 build_test_large: $(TEST_LARGE_FILES) $(filter-out $(SRC_DIR)/main.c, $(SRC_FILES)) # all large test files + source files without main.c
 	$(CC) $(CFLAGS) -g $^ -o $(TEST_LARGE_TARGET)
-	@echo "✅ compiled $(TEST_TARGET)"
+	@echo "✅ compiled $(TEST_LARGE_TARGET)"
 
 train_large:
 	./$(SRC_TARGET) train $(LARGE_TXT) -o $(LARGE_BFC)
