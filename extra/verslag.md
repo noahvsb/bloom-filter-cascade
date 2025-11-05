@@ -24,6 +24,16 @@ Indien alle categoriëen behalve 1 leeg zijn na het afwerken van de volledige tr
 
 Na het stoppen zal er 1 niet-lege categorie overblijven, hiermee kunnen wij dus de gevallen classificeren die overal (false-)positives zijn.
 
+### cascade voor $C_1$, cascade voor $C_2$, ..., cascade voor $C_3$
+
+Het vorige algoritme is simpel en snel, maar we kunnen beter doen omtrent opslag.
+
+De titel van de paragraaf doet denken dat het algoritme slecht gaat zijn, een volledig nieuwe cascade voor elke categorie. Maar we kunnen hem zodanig opbouwen dat het veel minder opslag opneemt (het zal wel trager zijn dan het vorig algoritme, maar opslag is hier belangrijker).
+
+#### cascade voor $C_i$
+
+`<placeholder>`
+
 ## # bits en hashfuncties
 
 \# hashfuncties optimaal: $k = \frac{n}{m} * \ln{2}$ met $m = \text{\# elementen}$ en $n = \text{\# bits}$
@@ -64,6 +74,12 @@ en $k = 5$
 
 We zullen dus nu een k meegeven aan de bloomfilter om de n mee te berekenen zodanig dat de kans op false positives kleiner is dan $2^{-k}$
 
+Waarom doe ik $2^{-k}$ als kans en geef ik de k mee om daaruit de n te halen i.p.v. de kans op false positives mee te geven en daaruit de k en n te halen?
+
+Omdat de afrondingen dan veel minder doorwegen. Nu heb ik afrondingen op mijn aantal bits dat makkelijk een paar miljoen kan zijn, terwijl ik geen afrondingen heb op mijn k.
+
+Bv. een afronding van 5.4 naar 5 bij de k zal meer verschil geven dan een afronding van 1234567.4 naar 1234567, niet alleen doordat het getal daardoor relatief minder verkleint, maar ook omdat ik die n toch moet afronden naar een getal deelbaar door 8 (aangezien ik een `uint8_t*` gebruik voor de bloomfilter bits). Dus 1234567.4 wordt 1234567, maar dan 1234568 om deelbaar door 8 te worden, dus de afronding maakt geen verschil.
+
 ## bestandsformaat cascade
 
 vooraf:
@@ -89,12 +105,11 @@ indien de categorie horende bij een bloomfilter leeg is, zet je het aantal hashf
 
 Voor de categorie namen is er een limitatie van 256 chars bij zowel `train` als `classify`
 
-Indien een ingegeven element bij `classify` niet in de volledige verzameling zit en niet alle categoriëen op hetzelfde moment leeg zijn geworden bij het bouwen van de cascade, dan zal deze geclassificeerd worden als de laatste niet-lege categorie na het bouwen van de cascade.
-Dus op deze manier wel false positives, maar ja ge moet maar geen elementen ingeven die niet in de volledige verzameling zitten.
+Indien een ingegeven element bij `classify` in geen enkele categorie zit, dan zal deze geclassificeerd worden als een random categorie. Meestal de eerste waarvan een cascade wordt gemaakt.
 
 Voor de nummers (aantal elementen, aantal bits ...) is er een limitatie van 32 bits (0 - 4,294,967,295)
 
-Bv. het aantal elementen in `large.txt` is 25,000,000 en pas vanaf we een $p \geq 172$ kiezen zal het aantal bits daar groter zijn dan de limitatie, maar dit is een onrealistische situatie, in quasi alle gevallen zal $p \leq 10$ zijn en dan kunnen we 429,496,729 elementen hebben, dus deze limiet is voldoende. 
+Bv. het aantal elementen in `large.txt` is 25,000,000 en pas vanaf we een $k \geq 120$ hebben zal het aantal bits daar groter zijn dan de limitatie, maar dit is een onrealistische situatie, in quasi alle gevallen zal $k \leq 8$ zijn en dan kunnen we 372,130,558 elementen hebben, dus deze limiet is voldoende. 
 
 Ik kan het verhogen naar 64 bit unsigned integers, maar dat zal het aantal geheugen onnodeloos vergroten, aangezien de laatste 32 bits quasi nooit gebruikt zullen worden en we veel zo'n nummers zullen gebruiken. 
 

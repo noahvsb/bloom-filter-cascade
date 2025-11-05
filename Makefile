@@ -50,7 +50,8 @@ build_test_large: $(TEST_LARGE_FILES) $(filter-out $(SRC_DIR)/main.c, $(SRC_FILE
 
 train_large:
 	./$(SRC_TARGET) train $(LARGE_TXT) -o $(LARGE_BFC)
-	@echo "✅ trained $(LARGE_BFC)"
+	@size=$$(du -h $(LARGE_BFC) | cut -f1); \
+	echo "✅ trained $(LARGE_BFC) ($${size}B)"
 
 test_large: build build_test_large train_large
 	./$(TEST_LARGE_TARGET)
