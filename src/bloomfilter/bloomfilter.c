@@ -2,7 +2,13 @@
 
 Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, uint8_t k) {
     uint32_t except_size = except < 0 || except >= list->categories_size ? 0 : list->categories[except]->size;
-    uint32_t n8 = (list->elements_size - except_size) * k / log(2); // amount of bits (n = m * k / ln 2 rounded down)
+    uint32_t m = list->elements_size - except_size;
+
+    // adaptive calculation of k
+    // TODO
+
+    // calculation of n
+    uint32_t n8 = m * k / log(2); // amount of bits (n = m * k / ln 2 rounded down)
     uint32_t n = (n8 + 7) / 8; // amount of bits / 8 rounded up
 
     Bloomfilter* bloomfilter = malloc(sizeof(Bloomfilter));

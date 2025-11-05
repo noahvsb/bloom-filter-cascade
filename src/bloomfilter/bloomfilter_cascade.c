@@ -103,6 +103,8 @@ uint8_t create_bloomfilter_cascade(CategoryList* list, char* file_path, uint8_t 
             }
         }
 
+        printf("\n");
+
         first_step = false;
     }
 

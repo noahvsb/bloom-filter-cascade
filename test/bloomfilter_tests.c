@@ -7,9 +7,9 @@ void test_bloomfilter_create(void) {
     char* file_path = "test/data/test.txt";
     CategoryList* list = parse_categories(file_path);
 
-    Bloomfilter* bloomfilter = create_bloomfilter(list, -1, 8); // chance of false positive = 1/256
-    uint32_t n = 39; // amount of bits / 8 = 39 * 8 / 8
-    uint8_t k = 5; // amount of hash functions = 8 * ln(2) rounded down
+    uint8_t k = 8; // amount of hash functions
+    Bloomfilter* bloomfilter = create_bloomfilter(list, -1, k); // chance of false positive = 1/(2^-8) = 1/256
+    uint32_t n = 57; // amount of bits / 8
     TEST_CHECK(bloomfilter->size == n);
     TEST_CHECK(bloomfilter->hash_amount == k);
 

@@ -12,11 +12,17 @@ $...$
 
 $C_n \Rightarrow BF_n(C_1', C_2', ..., C_{n-1}') \Rightarrow C_n'$
 
-Bij $BF_i$ als het antwoord "neen" is, dan weten we dat het sowieso niet in de bijhorende $C_i$ zit.
+Bij $BF_i$ als het antwoord "neen" is, dan weten we dat het sowieso in de bijhorende $C_i$ zit.
 
 Zo hebben we al veel elementen kunnen uitsluiten.
 
-Dan de volgende cascade doen we met $C_1', C_2', ..., C_n'$
+Dan kunnen we de volgende cascadetrap analoog doen met $C_1', C_2', ..., C_n'$
+
+Indien de categoriëen die we in een bloomfilter zullen steken allemaal leeg zijn, stopt ons algoritme.
+
+Indien alle categoriëen behalve 1 leeg zijn na het afwerken van de volledige trap, stopt ons algoritme ook.
+
+Na het stoppen zal er 1 niet-lege categorie overblijven, hiermee kunnen wij dus de gevallen classificeren die overal (false-)positives zijn.
 
 ## # bits en hashfuncties
 
