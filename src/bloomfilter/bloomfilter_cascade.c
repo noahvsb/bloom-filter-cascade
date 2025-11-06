@@ -17,15 +17,7 @@ uint8_t create_bloomfilter_cascade(CategoryList* list, char* file_path, uint8_t 
     bool first_step = true;
     uint32_t empty_count = 0;
 
-    // uint32_t last_elements_amount = list->elements_size;
-
     while (empty_count < list->categories_size - 1) {
-        
-        // if (!first_step) {
-        //     printf("Size reduction: %f\n", last_elements_amount / (double) list->elements_size);
-        //     printf("From %d to %d\n", last_elements_amount, list->elements_size);
-        //     last_elements_amount = list->elements_size;
-        // }
 
         for (uint32_t i = 0; i < list->categories_size && empty_count < list->categories_size - 1; i++) {
             Category* category = list->categories[i];
