@@ -5,10 +5,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct Train {
     char* outputFile;
     char* inputFile;
+    bool algorithm;
 } Train;
 
 typedef struct Classify {

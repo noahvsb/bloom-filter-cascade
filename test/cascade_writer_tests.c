@@ -8,7 +8,9 @@ void test_write_start(void) {
     char* output_file_path = "test/data/temp.bfc";
     CategoryList* list = parse_categories(input_file_path);
 
-    FILE* file = write_start(list, output_file_path);
+    bool algorithm = 1;
+
+    FILE* file = write_start(output_file_path, list, algorithm);
     fclose(file);
 
     file = fopen(output_file_path, "rb");
@@ -40,6 +42,11 @@ void test_write_start(void) {
 
         TEST_CHECK(strcmp(name, expected) == 0);
     }
+
+//    bool algorithm_output;
+//    read_size = fread(&algorithm_output, sizeof(bool), 1, file);
+//    TEST_CHECK(read_size == 1);
+//    TEST_CHECK(algorithm_output == algorithm);
 
     fclose(file);
     free_categories(list);

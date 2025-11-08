@@ -9,7 +9,10 @@ void test_bloomfilter_cascade_create(void) {
     CategoryList* list = parse_categories(input_file_path);
 
     printf("\n");
-    uint8_t status = create_bloomfilter_cascade(list, output_file_path, 3);
+    uint8_t status = create_bloomfilter_cascade(output_file_path, list, 1, 3);
+    TEST_CHECK(status == 0);
+    
+    status = create_bloomfilter_cascade(output_file_path, list, 0, 3);
     TEST_CHECK(status == 0);
 
     // not checking the content of the cascade file:

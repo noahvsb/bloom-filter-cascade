@@ -10,10 +10,7 @@ void free_elements(Category* category) {
     }
 }
 
-uint8_t create_bloomfilter_cascade(CategoryList* list, char* file_path, uint8_t k) {
-    FILE* file = write_start(list, file_path);
-    if (!file) return 1;
-
+uint8_t fast_algorithm(FILE* file, CategoryList* list, uint8_t k) {
     bool first_step = true;
     uint32_t empty_count = 0;
 
@@ -108,6 +105,19 @@ uint8_t create_bloomfilter_cascade(CategoryList* list, char* file_path, uint8_t 
         }
     }
     write_end(non_empty_name, file);
+
+    return 0;
+}
+
+uint8_t create_bloomfilter_cascade(char* file_path, CategoryList* list, bool algorithm, uint8_t k) {
+    FILE* file = write_start(file_path, list, algorithm);
+    if (!file) return 1;
+
+    if (algorithm) {
+        if (fast_algorithm(file, list, k)) return 1; // TODO: implement other algorithm
+    } else {
+        if (fast_algorithm(file, list, k)) return 1;
+    }
 
     printf("Succesfully wrote bloomfilter cascade to: %s\n", file_path);
     return 0;

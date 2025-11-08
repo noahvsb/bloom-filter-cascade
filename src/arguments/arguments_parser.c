@@ -5,9 +5,10 @@ Command help_message(char* program) {
     printf("train:\n");
     printf("  Arguments:\n");
     printf("    -o <file>    output file\n");
+    printf("    -a <int>     0: fast algorithm - 1: less storage algorithm (default = 1)\n");
     printf("    <file>       input file (last argument that isn't preceded by a flag)\n");
     printf("  Examples:\n");
-    printf("    %s train -o cascade.bfc categories.txt\n", program);
+    printf("    %s train -o cascade.bfc -a 0 categories.txt\n", program);
     printf("    %s train categories.txt -o cascade.bfc\n\n", program);
     printf("classify:\n");
     printf("  Arguments:\n");
@@ -19,7 +20,7 @@ Command help_message(char* program) {
 }
 
 Command parse_train(int argc, char** argv) {
-    Train train = { "", "" };
+    Train train = { "", "", 1 };
 
     for (uint8_t i = 2; i < argc; i++) {
         if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--output") == 0) {
@@ -28,6 +29,12 @@ Command parse_train(int argc, char** argv) {
                 train.outputFile = argv[i];
             else 
                 return help_message(argv[0]); // still necessary for the following case: PROGRAM train input.txt -o output.bfc -o
+        } else if (strcmp(argv[i], "-a") == 0 || strcmp(argv[i], "--algorithm") == 0) {
+            i++;
+            if (i < argc)
+                train.algorithm = atoi(argv[i]);
+            else
+                return help_message(argv[0]);
         } else
             train.inputFile = argv[i];
     }

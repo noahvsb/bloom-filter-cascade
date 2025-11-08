@@ -1,6 +1,6 @@
 #include "cascade_writer.h"
 
-FILE* write_start(CategoryList* list, char* file_path) {
+FILE* write_start(char* file_path, CategoryList* list, bool algorithm) {
     FILE* file = fopen(file_path, "wb");
     if (!file) {
         fprintf(stderr, "Error opening file: %s\n", file_path);
@@ -15,6 +15,8 @@ FILE* write_start(CategoryList* list, char* file_path) {
         fwrite(&len, sizeof(uint8_t), 1, file);
         fwrite(category_name, sizeof(char), len, file);
     }
+
+    //fwrite(&(algorithm), sizeof(bool), 1, file);
 
     return file;
 }

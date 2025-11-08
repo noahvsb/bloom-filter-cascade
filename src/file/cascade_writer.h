@@ -4,10 +4,11 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "categories_parser.h"
 #include "../bloomfilter/bloomfilter.h"
 
-FILE* write_start(CategoryList* list, char* file_path);
+FILE* write_start(char* file_path, CategoryList* list, bool algorithm);
 
 void write_bloomfilter(Bloomfilter* bloomfilter, FILE* file);
 
