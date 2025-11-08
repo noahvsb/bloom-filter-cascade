@@ -83,9 +83,9 @@ Bv. een afronding van 5.4 naar 5 bij de k zal meer verschil geven dan een afrond
 ## bestandsformaat cascade
 
 vooraf:
+- 1 bit die het soort algoritme aangeeft (0 = snel algoritme, 1 = algoritme met weinig opslag)
 - aantal categoriëen (32 bits) = aantal bloomfilters per trap
 - namen van categoriëen in juiste volgorde (8 bits lengte + 8 bits * len)
-- 1 bit die het soort algoritme aangeeft (0 = snel algoritme, 1 = algoritme met weinig opslag)
 
 elke cascade trap:
 - /

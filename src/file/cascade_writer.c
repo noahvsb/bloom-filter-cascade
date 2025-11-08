@@ -7,6 +7,8 @@ FILE* write_start(char* file_path, CategoryList* list, bool algorithm) {
         return NULL;
     }
 
+    fwrite(&(algorithm), sizeof(bool), 1, file);
+
     fwrite(&(list->categories_size), sizeof(uint32_t), 1, file);
 
     for (uint32_t i = 0; i < list->categories_size; i++) {
@@ -15,8 +17,6 @@ FILE* write_start(char* file_path, CategoryList* list, bool algorithm) {
         fwrite(&len, sizeof(uint8_t), 1, file);
         fwrite(category_name, sizeof(char), len, file);
     }
-
-    //fwrite(&(algorithm), sizeof(bool), 1, file);
 
     return file;
 }

@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
             Cascade* cascade = parse_cascade(command.data.classify.inputFile);
             if (!cascade) exit(1);
             run_classify(cascade);
-            free(cascade);
+            free_cascade(cascade);
             break;
         default:
             exit(1);

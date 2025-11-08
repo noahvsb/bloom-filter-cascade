@@ -21,6 +21,11 @@ void test_write_start(void) {
 
     size_t read_size;
 
+    bool algorithm_output;
+    read_size = fread(&algorithm_output, sizeof(bool), 1, file);
+    TEST_CHECK(read_size == 1);
+    TEST_CHECK(algorithm_output == algorithm);
+
     uint32_t categories_size;
     read_size = fread(&categories_size, sizeof(uint32_t), 1, file);
     TEST_CHECK(read_size == 1);
@@ -42,11 +47,6 @@ void test_write_start(void) {
 
         TEST_CHECK(strcmp(name, expected) == 0);
     }
-
-//    bool algorithm_output;
-//    read_size = fread(&algorithm_output, sizeof(bool), 1, file);
-//    TEST_CHECK(read_size == 1);
-//    TEST_CHECK(algorithm_output == algorithm);
 
     fclose(file);
     free_categories(list);

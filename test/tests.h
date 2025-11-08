@@ -25,7 +25,8 @@ void test_write_bloomfilter(void);
 void test_write_end(void);
 
 // bloomfilter cascade tests
-void test_bloomfilter_cascade_create(void);
+void test_bloomfilter_cascade_create_fast(void);
+void test_bloomfilter_cascade_create_less_storage(void);
 
 // cascade parser tests
 void test_parse_cascade(void);

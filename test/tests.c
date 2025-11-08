@@ -17,7 +17,8 @@ TEST_LIST = {
     { "cascade writer: bloomfilter", test_write_bloomfilter },
     { "cascade writer: end", test_write_end },
 
-    { "bloomfilter cascade: create", test_bloomfilter_cascade_create },
+    { "bloomfilter cascade: create fast", test_bloomfilter_cascade_create_fast },
+    // { "bloomfilter cascade: create less storage", test_bloomfilter_cascade_create_less_storage },
 
     { "cascade parser: parse", test_parse_cascade },
     { "cascade parser: parse failcheck", test_parse_cascade_failcheck },
