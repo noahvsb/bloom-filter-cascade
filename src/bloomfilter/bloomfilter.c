@@ -40,14 +40,13 @@ Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, int32_t only
     }
 
     // generate hash seeds
-    for (uint8_t i = 0; i < k; i++) {
+    for (uint8_t i = 0; i < k; i++)
         bloomfilter->hash_seeds[i] = (uint8_t) (rand() % 256);
-    }
 
     // set bits
-    if (use_only) {
+    if (use_only)
         set_bits(bloomfilter, list->categories[only]);
-    } else {
+    else {
         for (int32_t i = 0; i < list->categories_size; i++) {
             if (i == except) continue;
             set_bits(bloomfilter, list->categories[i]);
@@ -55,6 +54,17 @@ Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, int32_t only
     }
 
     return bloomfilter;
+}
+
+bool test_bloomfilter(Bloomfilter* bloomfilter, char* element_name) {
+    uint8_t count = 0;
+    
+    for (int8_t h = 0; h < bloomfilter->hash_amount; h++) {
+        uint32_t hash = murmurhash(element_name, strlen(element_name), bloomfilter->hash_seeds[h]) % (bloomfilter->size * 8);
+        if (bloomfilter->bf[hash / 8] & (1ULL << (hash % 8))) count++;
+    }
+
+    return count == bloomfilter->hash_amount;
 }
 
 void free_bloomfilter(Bloomfilter* bloomfilter) {

@@ -32,6 +32,8 @@ typedef struct Bloomfilter {
  */
 Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, int32_t only, uint8_t k);
 
+bool test_bloomfilter(Bloomfilter* bloomfilter, char* element_name);
+
 /**
  * creates a bloomfilter cascade, which it writes to file_path
  * 

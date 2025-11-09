@@ -10,6 +10,58 @@ void free_elements(Category* category) {
     }
 }
 
+uint8_t update_category(Category* category, Bloomfilter* bloomfilter, Category* output) {
+    // create new elements pointer to overwrite the new one
+    uint32_t new_size = 0;
+    uint32_t new_leftover_size = 32;
+    char** new_elements = malloc(sizeof(char*) * new_leftover_size);
+    if (!new_elements) {
+        fprintf(stderr, "Memory allocation of new elements failed");
+        return 1;
+    }
+
+    // tests all elements from category and put the false positives in the new one
+    for (uint32_t j = 0; j < category->size; j++) {
+        char* element = category->elements[j];
+        uint8_t element_length = strlen(element);
+        uint8_t count = 0;
+        for (int8_t h = 0; h < bloomfilter->hash_amount; h++) {
+            uint32_t hash = murmurhash(element, element_length, bloomfilter->hash_seeds[h]) % (bloomfilter->size * 8);
+            if (bloomfilter->bf[hash / 8] & (1ULL << (hash % 8))) count++;
+        }
+        if (count == bloomfilter->hash_amount) {
+            // we got a false positive, add to the new elements
+            new_elements[new_size] = malloc(sizeof(char) * (element_length + 1));
+            if (!new_elements[new_size]) {
+                fprintf(stderr, "Memory allocation of new element failed");
+                return 1;
+            }
+            memcpy(new_elements[new_size], element, element_length + 1);
+            new_size++;
+            new_leftover_size--;
+    
+            if (new_leftover_size == 0) {
+                new_elements = realloc(new_elements, sizeof(char*) * new_size * 2);
+                if (!new_elements) {
+                    fprintf(stderr, "Memory reallocation of new elements failed");
+                    return 1;
+                }
+                new_leftover_size = new_size;
+            }
+        }
+    }
+
+    if (output == NULL) output = category;
+
+    // free old elements and set new values
+    free_elements(output);
+    output->size = new_size;
+    output->leftover_size = new_leftover_size;
+    output->elements = new_elements;
+
+    return 0;
+}
+
 uint8_t fast_algorithm(FILE* file, CategoryList* list, uint8_t k) {
     bool first_step = true;
     uint32_t empty_count = 0;
@@ -26,68 +78,17 @@ uint8_t fast_algorithm(FILE* file, CategoryList* list, uint8_t k) {
             } else {
                 // create and write bloomfilter
                 Bloomfilter* bloomfilter = create_bloomfilter(list, i, -1, k);
-                if (!bloomfilter) {
-                    clean_return(1, file, fclose);
-                    return 1;
-                }
+                if (!bloomfilter) return !clean_return(1, file, fclose);
                 write_bloomfilter(bloomfilter, file);
                 printf("Wrote bloomfilter for %s to file\n    - size: %d -- hash: %d\n", list->categories[i]->name, bloomfilter->size, bloomfilter->hash_amount);
                 
-                // update list
-                // create new elements pointer to overwrite the new one
-                uint32_t new_size = 0;
-                uint32_t new_leftover_size = 32;
-                char** new_elements = malloc(sizeof(char*) * new_leftover_size);
-                if (!new_elements) {
-                    fprintf(stderr, "Memory allocation of new elements failed");
-                    clean_return(2, file, fclose, bloomfilter, free_bloomfilter);
-                    return 1;
-                }
+                // update category
+                if (update_category(category, bloomfilter, NULL)) return !clean_return(2, file, fclose, bloomfilter, free_bloomfilter);
+                list->elements_size -= old_size - category->size;
 
-                // tests all elements from category and put the false positives in the new one
-                for (uint32_t j = 0; j < category->size; j++) {
-                    char* element = category->elements[j];
-                    uint8_t element_length = strlen(element);
-                    uint8_t count = 0;
-                    for (int8_t h = 0; h < bloomfilter->hash_amount; h++) {
-                        uint32_t hash = murmurhash(element, element_length, bloomfilter->hash_seeds[h]) % (bloomfilter->size * 8);
-                        if (bloomfilter->bf[hash / 8] & (1ULL << (hash % 8))) count++;
-                    }
-                    if (count == bloomfilter->hash_amount) {
-                        // we got a false positive, add to the new elements
-                        new_elements[new_size] = malloc(sizeof(char) * (element_length + 1));
-                        if (!new_elements[new_size]) {
-                            fprintf(stderr, "Memory allocation of new element failed");
-                            clean_return(2, file, fclose, bloomfilter, free_bloomfilter);
-                            return 1;
-                        }
-                        memcpy(new_elements[new_size], element, element_length);
-                        new_elements[new_size][element_length] = '\0';
-                        new_size++;
-                        new_leftover_size--;
-                
-                        if (new_leftover_size == 0) {
-                            new_elements = realloc(new_elements, sizeof(char*) * new_size * 2);
-                            if (!new_elements) {
-                                fprintf(stderr, "Memory reallocation of new elements failed");
-                                clean_return(2, file, fclose, bloomfilter, free_bloomfilter);
-                                return 1;
-                            }
-                            new_leftover_size = new_size;
-                        }
-                    }
-                }
+                if (category->size == 0) empty_count++;
 
                 free_bloomfilter(bloomfilter);
-
-                // free old elements and set new values
-                free_elements(category);
-                category->size = new_size;
-                category->leftover_size = new_leftover_size;
-                category->elements = new_elements;
-                list->elements_size -= old_size - new_size;
-
-                if (new_size == 0) empty_count++;
             }
         }
 
@@ -108,23 +109,158 @@ uint8_t fast_algorithm(FILE* file, CategoryList* list, uint8_t k) {
     return 0;
 }
 
+void free_new_categories(Category** new_categories, uint32_t size, bool elements_as_well) {
+    if (new_categories) {
+        for (uint32_t i = 0; i < size; i++) {
+            if (new_categories[i]) {
+                if (elements_as_well)
+                    free_elements(new_categories[i]);
+                free(new_categories[i]);
+            }
+        }
+        free(new_categories);
+    }
+}
+
 uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
     bool first_step = true;
     uint32_t empty_count = 0;
 
     while (empty_count < list->categories_size - 1) {
+        // malloc new categories
+        Category** new_categories = malloc(sizeof(Category*) * list->categories_size);
+        if (!new_categories) {
+            fprintf(stderr, "Memory allocation of temporary list failed\n");
+            return !clean_return(1, file, fclose);
+        }
+        // malloc each new category
+        for (uint32_t i = 0; i < list->categories_size; i++) {
+            new_categories[i] = malloc(sizeof(Category));
+            if (!new_categories[i]) {
+                fprintf(stderr, "Memory allocation of new category failed\n");
+                free_new_categories(new_categories, list->categories_size, true);
+                return !clean_return(1, file, fclose);
+            }
+            new_categories[i]->size = 0;
+            new_categories[i]->leftover_size = 0;
+            new_categories[i]->elements = NULL;
+            new_categories[i]->name = NULL;
+        }
+        uint32_t new_size = 0;
+
+        uint32_t end_index = 0; // amount of actual iteration of the loop
+
+        // loop for 1 cascade step
         for (uint32_t i = 0; i < list->categories_size && empty_count < list->categories_size - 1; i++) {
             Category* category = list->categories[i];
             uint32_t old_size = category->size;
 
-            // just write 8 x 0-bits if size is 0
+            // just write 16 x 0-bits if size is 0, because in this algorithm, that means 2 empty bloomfilters
             if (old_size == 0) {
-                fwrite(&(uint8_t){0}, sizeof(uint8_t), 1, file);
+                fwrite(&(uint16_t){0}, sizeof(uint16_t), 1, file);
                 if (first_step) empty_count++;
             } else {
-                // TODO
+                // create and write first bloomfilter
+                Bloomfilter* bloomfilter1 = create_bloomfilter(list, -1, i, k);
+                if (!bloomfilter1) {
+                    free_new_categories(new_categories, list->categories_size, true);
+                    return !clean_return(1, file, fclose);
+                }
+                write_bloomfilter(bloomfilter1, file);
+                printf("Wrote bloomfilter 1 for %s to file\n    - size: %d -- hash: %d\n", list->categories[i]->name, bloomfilter1->size, bloomfilter1->hash_amount);
+
+                // create temporary list to create the next bloomfilter
+                CategoryList* temp = malloc(sizeof(CategoryList));
+                if (!temp) {
+                    fprintf(stderr, "Memory allocation of temporary list failed\n");
+                    free_new_categories(new_categories, list->categories_size, true);
+                    return !clean_return(2, file, fclose, bloomfilter1, free_bloomfilter);
+                }
+                temp->elements_size = 0;
+                temp->categories_size = list->categories_size;
+                temp->leftover_size = 0;
+                temp->categories = malloc(sizeof(Category*) * temp->categories_size);
+                if (!temp->categories) {
+                    fprintf(stderr, "Memory allocation of temporary list categories failed\n");
+                    free_new_categories(new_categories, list->categories_size, true);
+                    return !clean_return(3, file, fclose, bloomfilter1, free_bloomfilter, temp, free_categories);
+                }
+
+                // update categories and store in temp
+                for (uint32_t j = 0; j < list->categories_size; j++) {
+                    temp->categories[j] = malloc(sizeof(Category));
+                    if (!temp->categories[j]) {
+                        fprintf(stderr, "Memory allocation of temporary category failed\n");
+                        free_new_categories(new_categories, list->categories_size, true);
+                        return !clean_return(3, file, fclose, bloomfilter1, free_bloomfilter, temp, free_categories);
+                    }
+                    temp->categories[j]->size = 0;
+                    temp->categories[j]->leftover_size = 0;
+                    temp->categories[j]->elements = NULL;
+                    temp->categories[j]->name = NULL;
+
+                    if (j == i) continue;
+
+                    if (update_category(list->categories[j], bloomfilter1, temp->categories[j])) {
+                        free_new_categories(new_categories, list->categories_size, true);
+                        return !clean_return(2, file, fclose, bloomfilter1, free_bloomfilter, temp, free_categories);
+                    }
+
+                    temp->elements_size += temp->categories[j]->size;
+                }
+
+                free_bloomfilter(bloomfilter1);
+
+                // create and write second bloomfilter
+                if (temp->elements_size == 0)
+                    fwrite(&(uint8_t){0}, sizeof(uint8_t), 1, file); // write 8 x 0 bits if temp is empty
+                else {
+                    Bloomfilter* bloomfilter2 = create_bloomfilter(temp, i, -1, k);
+                    if (!bloomfilter2) {
+                        free_new_categories(new_categories, list->categories_size, true);
+                        return !clean_return(2, file, fclose, temp, free_categories);
+                    }
+                    write_bloomfilter(bloomfilter2, file);
+                    printf("Wrote bloomfilter 2 for %s to file\n    - size: %d -- hash: %d\n", list->categories[i]->name, bloomfilter2->size, bloomfilter2->hash_amount);
+
+                    // update category
+                    if (update_category(category, bloomfilter2, new_categories[i])) {
+                        free_new_categories(new_categories, list->categories_size, true);
+                        return !clean_return(3, file, fclose, bloomfilter2, free_bloomfilter, temp, free_categories);
+                    }
+
+                    new_size += new_categories[i]->size;
+
+                    free_bloomfilter(bloomfilter2);
+                }
+
+                free_categories(temp);
+
+                if (new_categories[i]->size == 0) empty_count++;
+
+                end_index++;
             }
         }
+
+        // update list
+        for (uint32_t i = 0; i < end_index; i++) {
+            Category* category = list->categories[i];
+            Category* new_category = new_categories[i];
+
+            // free old elements and set new values
+            free_elements(category);
+            category->size = new_category->size;
+            category->leftover_size = new_category->leftover_size;
+            category->elements = new_category->elements;
+        }
+
+        list->elements_size = new_size;
+
+        free_new_categories(new_categories, list->categories_size, false);
+
+        printf("\n");
+
+        first_step = false;
     }
 
     char* non_empty_name = "";
@@ -144,7 +280,7 @@ uint8_t create_bloomfilter_cascade(char* file_path, CategoryList* list, bool alg
     if (!file) return 1;
 
     if (algorithm) {
-        if (fast_algorithm(file, list, k)) return 1; // TODO: implement other algorithm
+        if (less_storage_algorithm(file, list, k)) return 1;
     } else {
         if (fast_algorithm(file, list, k)) return 1;
     }

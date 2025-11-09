@@ -24,9 +24,11 @@ Indien alle categoriëen behalve 1 leeg zijn na het afwerken van de volledige tr
 
 Na het stoppen zal er 1 niet-lege categorie overblijven, hiermee kunnen wij dus de gevallen classificeren die overal (false-)positives zijn.
 
-### minder geheugen
+### minder opslag
 
 Het vorige algoritme is simpel en snel, maar we kunnen beter doen omtrent opslag.
+
+<TODO: herschrijf zodat het duidelijk is dat het meer een uitbreiding is op het snelle algoritme, i.p.v. een volledig nieuw algoritme>
 
 #### cascadetraponderdeel voor $C_i$
 
@@ -43,6 +45,8 @@ Als het antwoord neen is bij $BF_2$, dan weet je dat het in $C_i$ zit.
 Indien het antwoord bij beide ja is, ga je ook over naar het volgende onderdeel.
 
 Indien je nog geen antwoord hebt gekregen op het laatste onderdeel van de cascadetrap (die met $C_n$), zal je gewoon met $C_1', C_2', ..., C_n'$ de volgende trap maken.
+
+Note: De grootte van het cascade bestand is kleiner, maar dit algoritme gebruikt meer geheugen.
 
 ## # bits en hashfuncties
 
@@ -106,7 +110,7 @@ elke bloomfilter binnen de trap:
 - aantal bits in bloomfilter / 8 (32 bits)
 - bloomfilter bits (veelvoud van 8)
 
-indien de categorie horende bij een bloomfilter leeg is, zijn er 8 x 0 bits voor het aantal hashfuncties en dan ga je over naar de volgende bloomfilter, bij het algoritme met minder opslag doe je telkens 2 bloomfilters per categorie in een trap, maar om minder geheugen in te nemen doe ik maar 1 keer 8 x 0 bits
+indien de categorie horende bij een bloomfilter leeg is, zijn er 8 x 0 bits voor het aantal hashfuncties en dan ga je over naar de volgende bloomfilter
 
 - einde van bloomfilters aankondigen met 8 x 1-bits, aangezien 8 x 0-bits een lege categorie betekent
 

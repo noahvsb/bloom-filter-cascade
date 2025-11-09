@@ -14,20 +14,10 @@ void test_bloomfilter_create(void) {
     TEST_CHECK(bloomfilter->hash_amount == k);
 
     char* element_in = "element3";
-    uint8_t count = 0;
-    for (int8_t h = 0; h < k; h++) {
-        uint32_t hash = murmurhash(element_in, 8, bloomfilter->hash_seeds[h]) % (n * 8);
-        if (bloomfilter->bf[hash / 8] & (1ULL << (hash % 8))) count++;
-    }
-    TEST_CHECK(count == k);
+    TEST_CHECK(test_bloomfilter(bloomfilter, element_in));
 
     char* element_out = "element7";
-    count = 0;
-    for (int8_t h = 0; h < k; h++) {
-        uint32_t hash = murmurhash(element_out, 8, bloomfilter->hash_seeds[h]) % (n * 8);
-        if (bloomfilter->bf[hash / 8] & (1ULL << (hash % 8))) count++;
-    }
-    TEST_CHECK(count < k);
+    TEST_CHECK(!test_bloomfilter(bloomfilter, element_out));
 
     free_categories(list);
     free_bloomfilter(bloomfilter);

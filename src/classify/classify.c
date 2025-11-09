@@ -9,13 +9,7 @@ char* classify_fast(FastCascade* fast_cascade, char* element_name) {
 
         if (bloomfilter == NULL) continue; // empty
 
-        uint8_t count = 0;
-        for (int8_t h = 0; h < bloomfilter->hash_amount; h++) {
-            uint32_t hash = murmurhash(element_name, strlen(element_name), bloomfilter->hash_seeds[h]) % (bloomfilter->size * 8);
-            if (bloomfilter->bf[hash / 8] & (1ULL << (hash % 8))) count++;
-        }
-
-        if (count != bloomfilter->hash_amount) {
+        if (!test_bloomfilter(bloomfilter, element_name)) {
             category_name = fast_cascade->categories_names[i % fast_cascade->categories_size];
             done = true;
         }
@@ -27,8 +21,35 @@ char* classify_fast(FastCascade* fast_cascade, char* element_name) {
     return category_name;
 }
 
+char* classify_less_storage(FastCascade* cascade, char* element_name) {
+    char* category_name = NULL;
+
+    bool done = false;
+    for (uint32_t i = 0; i < cascade->bloomfilters_size && !done; i+=2) {
+        Bloomfilter* bloomfilter1 = cascade->bloomfilters[i];
+
+        if (bloomfilter1 == NULL) continue; // empty
+
+        if (!test_bloomfilter(bloomfilter1, element_name)) continue;
+
+        Bloomfilter* bloomfilter2 = cascade->bloomfilters[i + 1];
+
+        if (bloomfilter2 == NULL) continue; // empty
+
+        if (!test_bloomfilter(bloomfilter2, element_name)) {
+            category_name = cascade->categories_names[(i / 2) % cascade->categories_size];
+            done = true;
+        }
+    }
+
+    // if one couldn't be classified, it has to be in the last non-empty category
+    if (category_name == NULL) category_name = cascade->last_category_name;
+
+    return category_name;
+}
+
 char* classify(Cascade* cascade, char* element_name) {
-    if (cascade->algorithm) return classify_fast(cascade->fast, element_name); // TODO: implement classify_less_storage()
+    if (cascade->algorithm) return classify_less_storage(cascade->fast, element_name);
     else return classify_fast(cascade->fast, element_name);
 }
 
