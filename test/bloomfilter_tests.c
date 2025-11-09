@@ -8,7 +8,7 @@ void test_bloomfilter_create(void) {
     CategoryList* list = parse_categories(file_path);
 
     uint8_t k = 8; // amount of hash functions
-    Bloomfilter* bloomfilter = create_bloomfilter(list, -1, k); // chance of false positive = 1/(2^-8) = 1/256
+    Bloomfilter* bloomfilter = create_bloomfilter(list, -1, -1, k); // chance of false positive = 1/(2^-8) = 1/256
     uint32_t n = 57; // amount of bits / 8
     TEST_CHECK(bloomfilter->size == n);
     TEST_CHECK(bloomfilter->hash_amount == k);
@@ -38,7 +38,7 @@ void test_bloomfilter_create_failcheck(void) {
     CategoryList* list = parse_categories(file_path);
 
     // should just return an empty bloomfilter, not print an error
-    Bloomfilter* bloomfilter = create_bloomfilter(list, -1, 0);
+    Bloomfilter* bloomfilter = create_bloomfilter(list, -1, -1, 0);
     TEST_CHECK(bloomfilter->size == 0);
     TEST_CHECK(bloomfilter->bf != NULL);
 

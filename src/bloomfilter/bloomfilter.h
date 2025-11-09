@@ -25,10 +25,12 @@ typedef struct Bloomfilter {
  * creates a bloomfilter with all categories from list except the one at index = except
  * 
  * @param list: category list of all categories
- * @param except: the category that should be left out of the bloomfilter, put -1 if you don't want to exclude a category
+ * @param except: the category that should be left out of the bloomfilter, do except < 0 if you don't want to exclude a category
+ * @param only: the only category that should be included in the bloomfilter, do only < 0 if you want multiple categories
+ *     If both except and only are >= 0, except gets priority, so only is treated as < 0
  * @param k: the chance for false positives will be around 1 / 2^k (with k > 0)
  */
-Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, uint8_t k);
+Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, int32_t only, uint8_t k);
 
 /**
  * creates a bloomfilter cascade, which it writes to file_path

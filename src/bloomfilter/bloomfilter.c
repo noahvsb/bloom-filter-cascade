@@ -1,13 +1,30 @@
 #include "bloomfilter.h"
 
-Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, uint8_t k) {
-    uint32_t except_size = except < 0 || except >= list->categories_size ? 0 : list->categories[except]->size;
-    uint32_t m = list->elements_size - except_size;
+void set_bits(Bloomfilter* bloomfilter, Category* category) {
+    for (int32_t j = 0; j < category->size; j++) {
+        char* element = category->elements[j];
+        uint8_t element_length = strlen(element);
+        for (int8_t h = 0; h < bloomfilter->hash_amount; h++) {
+            uint32_t hash = murmurhash(element, element_length, bloomfilter->hash_seeds[h]) % (bloomfilter->size * 8);
+            bloomfilter->bf[hash / 8] |= (1ULL << (hash % 8));
+        }
+    }
+}
 
-    // calculation of n
+Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, int32_t only, uint8_t k) {
+    bool use_except = except >= 0 && except < list->categories_size;
+    bool use_only = only >= 0 && only < list->categories_size;
+    if (use_except && use_only) use_only = false;
+
+    // calculate amount of elements
+    uint32_t except_size = use_except ? list->categories[except]->size : 0;
+    uint32_t m = use_only ? list->categories[only]->size : list->elements_size - except_size;
+
+    // calculate amount of bits
     uint32_t n8 = m * k / log(2); // amount of bits (n = m * k / ln 2 rounded down)
     uint32_t n = (n8 + 7) / 8; // amount of bits / 8 rounded up
 
+    // alloc and initialize bloomfilter
     Bloomfilter* bloomfilter = malloc(sizeof(Bloomfilter));
     if (!bloomfilter) {
         fprintf(stderr, "Memory allocation of bloomfilter failed\n");
@@ -27,16 +44,13 @@ Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, uint8_t k) {
         bloomfilter->hash_seeds[i] = (uint8_t) (rand() % 256);
     }
 
-    for (int32_t i = 0; i < list->categories_size; i++) {
-        if (i == except) continue;
-        Category* category = list->categories[i];
-        for (int32_t j = 0; j < category->size; j++) {
-            char* element = category->elements[j];
-            uint8_t element_length = strlen(element);
-            for (int8_t h = 0; h < k; h++) {
-                uint32_t hash = murmurhash(element, element_length, bloomfilter->hash_seeds[h]) % (n * 8);
-                bloomfilter->bf[hash / 8] |= (1ULL << (hash % 8));
-            }
+    // set bits
+    if (use_only) {
+        set_bits(bloomfilter, list->categories[only]);
+    } else {
+        for (int32_t i = 0; i < list->categories_size; i++) {
+            if (i == except) continue;
+            set_bits(bloomfilter, list->categories[i]);
         }
     }
 

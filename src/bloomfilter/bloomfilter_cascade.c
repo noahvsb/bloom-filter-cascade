@@ -15,7 +15,6 @@ uint8_t fast_algorithm(FILE* file, CategoryList* list, uint8_t k) {
     uint32_t empty_count = 0;
 
     while (empty_count < list->categories_size - 1) {
-
         for (uint32_t i = 0; i < list->categories_size && empty_count < list->categories_size - 1; i++) {
             Category* category = list->categories[i];
             uint32_t old_size = category->size;
@@ -26,7 +25,7 @@ uint8_t fast_algorithm(FILE* file, CategoryList* list, uint8_t k) {
                 if (first_step) empty_count++;
             } else {
                 // create and write bloomfilter
-                Bloomfilter* bloomfilter = create_bloomfilter(list, i, k);
+                Bloomfilter* bloomfilter = create_bloomfilter(list, i, -1, k);
                 if (!bloomfilter) {
                     clean_return(1, file, fclose);
                     return 1;
@@ -95,6 +94,37 @@ uint8_t fast_algorithm(FILE* file, CategoryList* list, uint8_t k) {
         printf("\n");
 
         first_step = false;
+    }
+
+    char* non_empty_name = "";
+    for (uint32_t i = 0; i < list->categories_size; i++) {
+        if (list->categories[i]->size > 0) {
+            non_empty_name = list->categories[i]->name;
+            break;
+        }
+    }
+    write_end(non_empty_name, file);
+
+    return 0;
+}
+
+uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
+    bool first_step = true;
+    uint32_t empty_count = 0;
+
+    while (empty_count < list->categories_size - 1) {
+        for (uint32_t i = 0; i < list->categories_size && empty_count < list->categories_size - 1; i++) {
+            Category* category = list->categories[i];
+            uint32_t old_size = category->size;
+
+            // just write 8 x 0-bits if size is 0
+            if (old_size == 0) {
+                fwrite(&(uint8_t){0}, sizeof(uint8_t), 1, file);
+                if (first_step) empty_count++;
+            } else {
+                // TODO
+            }
+        }
     }
 
     char* non_empty_name = "";

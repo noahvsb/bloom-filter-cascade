@@ -1,6 +1,6 @@
 ## algoritme
 
-### cascadetrap met $C_1, C_2, ..., C_n$
+### snel
 
 $C_1 \Rightarrow BF_1(C_2, C_3, ..., C_n) \Rightarrow C_1'$
 
@@ -24,15 +24,25 @@ Indien alle categoriëen behalve 1 leeg zijn na het afwerken van de volledige tr
 
 Na het stoppen zal er 1 niet-lege categorie overblijven, hiermee kunnen wij dus de gevallen classificeren die overal (false-)positives zijn.
 
-### cascade voor $C_1$, cascade voor $C_2$, ..., cascade voor $C_3$
+### minder geheugen
 
 Het vorige algoritme is simpel en snel, maar we kunnen beter doen omtrent opslag.
 
-De titel van de paragraaf doet denken dat het algoritme slecht gaat zijn, een volledig nieuwe cascade voor elke categorie. Maar we kunnen hem zodanig opbouwen dat het veel minder opslag opneemt (het zal wel trager zijn dan het vorig algoritme, maar opslag is hier belangrijker).
+#### cascadetraponderdeel voor $C_i$
 
-#### cascade voor $C_i$
+noem $C_1, ..., C_{i - 1}, C_{i + 1}, ..., C_n = \bar{C_i}$
 
-`<placeholder>`
+$\bar{C_i} \Rightarrow BF_1(C_i) \Rightarrow \bar{C_i'}$
+
+$C_i \Rightarrow BF_2(\bar{C_i'}) \Rightarrow C_i'$
+
+Als het antwoord neen is bij $BF_1$, ga je over naar het onderdeel voor $C_{i + 1}$
+
+Als het antwoord neen is bij $BF_2$, dan weet je dat het in $C_i$ zit.
+
+Indien het antwoord bij beide ja is, ga je ook over naar het volgende onderdeel.
+
+Indien je nog geen antwoord hebt gekregen op het laatste onderdeel van de cascadetrap (die met $C_n$), zal je gewoon met $C_1', C_2', ..., C_n'$ de volgende trap maken.
 
 ## # bits en hashfuncties
 
@@ -96,7 +106,7 @@ elke bloomfilter binnen de trap:
 - aantal bits in bloomfilter / 8 (32 bits)
 - bloomfilter bits (veelvoud van 8)
 
-indien de categorie horende bij een bloomfilter leeg is, zet je het aantal hashfuncties gewoon 0 en ga je verder, dit is beter dan elke keer alle nieuwe lege categoriëen aan te kondigen of nutteloze bloomfilters aan te maken
+indien de categorie horende bij een bloomfilter leeg is, zijn er 8 x 0 bits voor het aantal hashfuncties en dan ga je over naar de volgende bloomfilter, bij het algoritme met minder opslag doe je telkens 2 bloomfilters per categorie in een trap, maar om minder geheugen in te nemen doe ik maar 1 keer 8 x 0 bits
 
 - einde van bloomfilters aankondigen met 8 x 1-bits, aangezien 8 x 0-bits een lege categorie betekent
 

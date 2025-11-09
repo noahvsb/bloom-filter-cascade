@@ -57,7 +57,7 @@ void test_write_bloomfilter(void) {
     char* input_file_path = "test/data/test.txt";
     char* output_file_path = "test/data/temp.bfc";
     CategoryList* list = parse_categories(input_file_path);
-    Bloomfilter* bloomfilter = create_bloomfilter(list, -1, 8);
+    Bloomfilter* bloomfilter = create_bloomfilter(list, -1, -1, 8);
 
     FILE* file = fopen(output_file_path, "wb");
     if (!file) {

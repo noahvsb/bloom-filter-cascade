@@ -7,7 +7,7 @@ char* classify_fast(FastCascade* fast_cascade, char* element_name) {
     for (uint32_t i = 0; i < fast_cascade->bloomfilters_size && !done; i++) {
         Bloomfilter* bloomfilter = fast_cascade->bloomfilters[i];
 
-        if (bloomfilter == NULL) continue;
+        if (bloomfilter == NULL) continue; // empty
 
         uint8_t count = 0;
         for (int8_t h = 0; h < bloomfilter->hash_amount; h++) {
