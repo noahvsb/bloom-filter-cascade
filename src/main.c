@@ -6,8 +6,7 @@
 #include "classify/classify.h"
 
 int main(int argc, char** argv) {
-    //srand((unsigned) time(NULL));
-    srand(456);
+    srand((unsigned) time(NULL));
 
     Command command = parse_arguments(argc, argv);
     switch (command.type) {

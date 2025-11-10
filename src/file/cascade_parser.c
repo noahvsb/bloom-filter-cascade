@@ -70,7 +70,6 @@ Cascade* parse_cascade(char* file_path) {
         fprintf(stderr, "Failed to allocate bloomfilters\n");
         return clean_return(2, cascade, free_cascade, file, fclose);
     }
-
     uint32_t leftover_size = categories_size;
 
     while (1) {
@@ -82,12 +81,12 @@ Cascade* parse_cascade(char* file_path) {
 
         // realloc if needed
         if (leftover_size == 0) {
-            cascade->bloomfilters = realloc(cascade->bloomfilters, sizeof(Bloomfilter*) * (cascade->bloomfilters_size + categories_size));
+            cascade->bloomfilters = realloc(cascade->bloomfilters, sizeof(Bloomfilter*) * cascade->bloomfilters_size * 2);
             if (!cascade->bloomfilters) {
                 fprintf(stderr, "Failed to reallocate bloomfilters\n");
                 return clean_return(2, cascade, free_cascade, file, fclose);
             }
-            leftover_size = categories_size;
+            leftover_size = cascade->bloomfilters_size;
         }
 
         Bloomfilter* bloomfilter = NULL;

@@ -13,16 +13,16 @@ void set_bits(Bloomfilter* bloomfilter, Category* category) {
 
 Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, int32_t only, uint8_t k) {
     bool use_except = except >= 0 && except < list->categories_size;
-    bool use_only = only >= 0 && only < list->categories_size;
+    bool use_only   = only   >= 0 && only   < list->categories_size;
     if (use_except && use_only) use_only = false;
 
     // calculate amount of elements
     uint32_t except_size = use_except ? list->categories[except]->size : 0;
-    uint32_t m = use_only ? list->categories[only]->size : list->elements_size - except_size;
+    uint32_t m           = use_only   ? list->categories[only]->size   : list->elements_size - except_size;
 
     // calculate amount of bits
     uint32_t n8 = m * k / log(2); // amount of bits (n = m * k / ln 2 rounded down)
-    uint32_t n = (n8 + 7) / 8; // amount of bits / 8 rounded up
+    uint32_t n  = (n8 + 7) / 8; // amount of bits / 8 rounded up
 
     // alloc and initialize bloomfilter
     Bloomfilter* bloomfilter = malloc(sizeof(Bloomfilter));

@@ -50,14 +50,14 @@ build_test_large: $(TEST_LARGE_FILES) $(filter-out $(SRC_DIR)/main.c, $(SRC_FILE
 	$(CC) $(CFLAGS) -g $^ -o $(TEST_LARGE_TARGET)
 	@echo "✅ compiled $(TEST_LARGE_TARGET)"
 
-TRAIN_LARGE_COMMAND := ./$(SRC_TARGET) train $(LARGE_TXT) -o $(LARGE_BFC)
+TRAIN_LARGE_COMMAND := $(SRC_TARGET) train $(LARGE_TXT) -o $(LARGE_BFC)
 
-train_large:
-	@$(TRAIN_LARGE_COMMAND)
+train_large: build
+	./$(TRAIN_LARGE_COMMAND)
 	@size=$$(du -h $(LARGE_BFC) | cut -f1); \
 	echo "✅ trained $(LARGE_BFC) ($${size}B)"
 
-test_large: build build_test_large train_large
+test_large: build_test_large
 	./$(TEST_LARGE_TARGET)
 	@echo "✅ ran large test"
 
@@ -71,7 +71,7 @@ massif: build_test
 	@echo "✅ valgrind massif done"
 
 massif_large: build_debug
-	valgrind --tool=massif --stacks=yes --massif-out-file=$(MASSIF_LARGE_TARGET) -- $(TRAIN_LARGE_COMMAND)
+	valgrind --tool=massif --stacks=yes --massif-out-file=$(MASSIF_LARGE_TARGET) -- ./$(TRAIN_LARGE_COMMAND)
 	massif-visualizer $(MASSIF_LARGE_TARGET)
 	@echo "✅ valgrind massif large done"
 

@@ -54,12 +54,10 @@ char* classify(Cascade* cascade, char* element_name) {
 void run_classify(Cascade* cascade) {
     while (1) {
         char element_name[256];
-
         if (fgets(element_name, sizeof(element_name), stdin) == NULL) {
             fprintf(stderr, "Failed to read input\n");
             return;
         }
-
         element_name[strcspn(element_name, "\n")] = '\0';
 
         if (strcmp(element_name, ":q") == 0) {

@@ -28,7 +28,7 @@ Command parse_train(int argc, char** argv) {
             if (i < argc)
                 train.outputFile = argv[i];
             else 
-                return help_message(argv[0]); // still necessary for the following case: PROGRAM train input.txt -o output.bfc -o
+                return help_message(argv[0]);
         } else if (strcmp(argv[i], "-a") == 0 || strcmp(argv[i], "--algorithm") == 0) {
             i++;
             if (i < argc)
