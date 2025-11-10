@@ -33,7 +33,8 @@ void test_parse_cascade(void);
 void test_parse_cascade_failcheck(void);
 
 // classify tests
-void test_classify(void);
+void test_classify_fast(void);
+void test_classify_less_storage(void);
 
 // large tests
 void test_classify_large(void);

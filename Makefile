@@ -15,13 +15,15 @@ SRC_TARGET := Bloom_filter_cascade
 TEST_TARGET := run_tests
 TEST_LARGE_TARGET := run_large_test
 MASSIF_TARGET := memory.ms
+MASSIF_LARGE_TARGET := memory_large.ms
+MASSIF_LARGE_FAST_TARGET := memory_large_fast.ms
 
 # Source files
 SRC_FILES := $(shell find $(SRC_DIR) -name '*.c')
 TEST_FILES := $(filter-out $(TEST_DIR)/test_large.c, $(shell find $(TEST_DIR) -name '*.c')) # all in TEST_DIR without large_test.c
 TEST_LARGE_FILES := $(TEST_DIR)/test_large.c $(TEST_DIR)/classify_tests.c
 
-.PHONY: all debug build build_debug build_test test build_test_large train_large test_large valgrind memcheck massif clean
+.PHONY: all debug build build_debug build_test test build_test_large train_large test_large memcheck massif massif_large massif_large_fast clean
 
 all: build test
 
@@ -48,8 +50,10 @@ build_test_large: $(TEST_LARGE_FILES) $(filter-out $(SRC_DIR)/main.c, $(SRC_FILE
 	$(CC) $(CFLAGS) -g $^ -o $(TEST_LARGE_TARGET)
 	@echo "✅ compiled $(TEST_LARGE_TARGET)"
 
+TRAIN_LARGE_COMMAND := ./$(SRC_TARGET) train $(LARGE_TXT) -o $(LARGE_BFC)
+
 train_large:
-	./$(SRC_TARGET) train $(LARGE_TXT) -o $(LARGE_BFC) -a 1
+	@$(TRAIN_LARGE_COMMAND)
 	@size=$$(du -h $(LARGE_BFC) | cut -f1); \
 	echo "✅ trained $(LARGE_BFC) ($${size}B)"
 
@@ -57,17 +61,25 @@ test_large: build build_test_large train_large
 	./$(TEST_LARGE_TARGET)
 	@echo "✅ ran large test"
 
-valgrind: massif memcheck
+memcheck: build_test
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all -- ./${TEST_TARGET}
+	@echo "✅ valgrind memcheck done"
 
 massif: build_test
 	valgrind --tool=massif --stacks=yes --massif-out-file=$(MASSIF_TARGET) -- ./$(TEST_TARGET)
 	massif-visualizer $(MASSIF_TARGET)
 	@echo "✅ valgrind massif done"
 
-memcheck: build_test
-	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all -- ./${TEST_TARGET}
-	@echo "✅ valgrind memcheck done"
+massif_large: build_debug
+	valgrind --tool=massif --stacks=yes --massif-out-file=$(MASSIF_LARGE_TARGET) -- $(TRAIN_LARGE_COMMAND)
+	massif-visualizer $(MASSIF_LARGE_TARGET)
+	@echo "✅ valgrind massif large done"
+
+massif_large_fast: build_debug
+	valgrind --tool=massif --stacks=yes --massif-out-file=$(MASSIF_LARGE_FAST_TARGET) -- $(TRAIN_LARGE_COMMAND) -a 0
+	massif-visualizer $(MASSIF_LARGE_FAST_TARGET)
+	@echo "✅ valgrind massif large fast done"
 
 clean:
-	rm -f $(SRC_TARGET) $(TEST_TARGET) $(TEST_LARGE_TARGET) $(MASSIF_TARGET)
+	rm -f $(SRC_TARGET) $(TEST_TARGET) $(TEST_LARGE_TARGET) $(MASSIF_TARGET) $(MASSIF_LARGE_TARGET) $(MASSIF_LARGE_FAST_TARGET)
 	@echo "✅ removed target binaries"
