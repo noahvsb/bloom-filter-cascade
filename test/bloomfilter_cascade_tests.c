@@ -4,6 +4,8 @@
 #include "../src/bloomfilter/bloomfilter.h"
 
 void test_bloomfilter_cascade_create_fast(void) {
+    srand(123);
+
     char* input_file_path = "test/data/test.txt";
     char* output_file_path = "test/data/temp_fast.bfc";
     CategoryList* list = parse_categories(input_file_path);
@@ -21,6 +23,8 @@ void test_bloomfilter_cascade_create_fast(void) {
 }
 
 void test_bloomfilter_cascade_create_less_storage(void) {
+    srand(123);
+    
     char* input_file_path = "test/data/test.txt";
     char* output_file_path = "test/data/temp_less_storage.bfc";
     CategoryList* list = parse_categories(input_file_path);

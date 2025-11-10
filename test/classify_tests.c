@@ -33,5 +33,5 @@ void test_classify_large(void) {
 
 void test_classify(void) {
     test_classify_template("test/data/test.txt", "test/data/test01.bfc", false);
-    // TODO: test for other algorithm
+    test_classify_template("test/data/test.txt", "test/data/test11.bfc", false);
 }

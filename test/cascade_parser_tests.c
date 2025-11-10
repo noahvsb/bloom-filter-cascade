@@ -8,26 +8,24 @@ void test_parse_cascade(void) {
 
     Cascade* cascade = parse_cascade(file_path);
     TEST_CHECK(cascade->algorithm == 0);
-
-    FastCascade* fast_cascade = cascade->fast;
-    TEST_CHECK(fast_cascade->categories_size == 5);
+    TEST_CHECK(cascade->categories_size == 5);
     
-    for (uint32_t i = 0; i < fast_cascade->categories_size; i++) {
+    for (uint32_t i = 0; i < cascade->categories_size; i++) {
         char expected[32];
         sprintf(expected, "category%u", i);
 
-        TEST_CHECK(strcmp(fast_cascade->categories_names[i], expected) == 0);
+        TEST_CHECK(strcmp(cascade->categories_names[i], expected) == 0);
     }
 
-    TEST_CHECK(fast_cascade->bloomfilters_size == 12);
+    TEST_CHECK(cascade->bloomfilters_size == 17);
 
-    for (uint32_t i = 0; i < fast_cascade->bloomfilters_size; i++) {
-        Bloomfilter* bloomfilter = fast_cascade->bloomfilters[i];
+    for (uint32_t i = 0; i < cascade->bloomfilters_size; i++) {
+        Bloomfilter* bloomfilter = cascade->bloomfilters[i];
         TEST_CHECK(bloomfilter == NULL || (bloomfilter->hash_amount == 1 && bloomfilter->size > 0));
         // actual content of bloomfilters will be checked in classify_test.c
     }
   
-    TEST_CHECK(strcmp(fast_cascade->last_category_name, "category4") == 0);
+    TEST_CHECK(strcmp(cascade->last_category_name, "category4") == 0);
 
     free_cascade(cascade);
 }

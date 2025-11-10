@@ -1,79 +1,74 @@
 #include "cascade_parser.h"
 
-void free_fast_cascade(FastCascade* fast_cascade) {
-    if (fast_cascade) {
-        if (fast_cascade->categories_names) {
-            for (uint32_t i = 0; i < fast_cascade->categories_size; i++)
-                if (fast_cascade->categories_names[i])
-                    free(fast_cascade->categories_names[i]);
-            free(fast_cascade->categories_names);
-        }
-        if (fast_cascade->bloomfilters) {
-            for (uint32_t i = 0; i < fast_cascade->bloomfilters_size; i++)
-                if (fast_cascade->bloomfilters[i])
-                    free_bloomfilter(fast_cascade->bloomfilters[i]);
-            free(fast_cascade->bloomfilters);
-        }
-        if (fast_cascade->last_category_name)
-            free(fast_cascade->last_category_name);
-        free(fast_cascade);
-    }
-}
-
-static void* read_error_fast(char* msg, char* file_path, FastCascade* fast_cascade, Bloomfilter* bloomfilter) {
+static void* read_error(char* msg, char* file_path, Cascade* cascade, FILE* file, Bloomfilter* bloomfilter) {
     fprintf(stderr, "Failed to read %s from file: %s\n", msg, file_path);
-    return clean_return(2, fast_cascade, free_fast_cascade, bloomfilter, free_bloomfilter);
+    return clean_return(3, cascade, free_cascade, file, fclose, bloomfilter, free_bloomfilter);
 }
 
-FastCascade* parse_fast_cascade(FILE* file, char* file_path) {
-    FastCascade* fast_cascade = malloc(sizeof(FastCascade));
-    if (!fast_cascade) {
-        fprintf(stderr, "Failed to allocate fast cascadfe\n");
+Cascade* parse_cascade(char* file_path) {
+    Cascade* cascade = malloc(sizeof(Cascade));
+    if (!cascade) {
+        fprintf(stderr, "Failed to allocate cascade\n");
         return NULL;
     }
+    cascade->algorithm = 0;
+    cascade->categories_size = 0;
+    cascade->bloomfilters_size = 0;
+    cascade->categories_names = NULL;
+    cascade->bloomfilters = NULL;
+    cascade->last_category_name = NULL;
 
-    fast_cascade->categories_size = 0;
-    fast_cascade->bloomfilters_size = 0;
-    fast_cascade->categories_names = NULL;
-    fast_cascade->bloomfilters = NULL;
-    fast_cascade->last_category_name = NULL;
+    FILE* file = fopen(file_path, "rb");
+    if (!file) {
+        fprintf(stderr, "Error opening file: %s\n", file_path);
+        return clean_return(1, cascade, free_cascade);
+    }
 
-    uint8_t read_size;
+    size_t read_size;
+
+    // algorithm
+    bool algorithm;
+    read_size = fread(&algorithm, sizeof(bool), 1, file);
+    if (read_size != 1) {
+        fprintf(stderr, "Failed to read algorithm from file: %s\n", file_path);
+        return clean_return(2, cascade, free_cascade, file, fclose);
+    }
+    cascade->algorithm = algorithm;
     
     // parse categories names
     uint32_t category_size;
     read_size = fread(&category_size, sizeof(uint32_t), 1, file);
-    if (read_size != 1) return read_error_fast("category size", file_path, fast_cascade, NULL);
+    if (read_size != 1) return read_error("category size", file_path, cascade, file, NULL);
 
-    fast_cascade->categories_size = category_size;
-    fast_cascade->categories_names = malloc(sizeof(char*) * category_size);
-    if (!fast_cascade->categories_names) {
+    cascade->categories_size = category_size;
+    cascade->categories_names = malloc(sizeof(char*) * category_size);
+    if (!cascade->categories_names) {
         fprintf(stderr, "Failed to allocate categories names\n");
-        return clean_return(1, fast_cascade, free_fast_cascade);
+        return clean_return(2, cascade, free_cascade, file, fclose);
     }
 
     for (uint32_t i = 0; i < category_size; i++) {
         uint8_t length;
         read_size = fread(&length, sizeof(uint8_t), 1, file);
-        if (read_size != 1) return read_error_fast("category name length", file_path, fast_cascade, NULL);
+        if (read_size != 1) return read_error("category name length", file_path, cascade, file, NULL);
 
         char* name = malloc(sizeof(char) * (length + 1));
         if (!name) {
             fprintf(stderr, "Failed to allocate category name\n");
-            return clean_return(1, fast_cascade, free_fast_cascade);
+            return clean_return(2, cascade, free_cascade, file, fclose);
         }
         read_size = fread(name, sizeof(char), length, file);
-        if (read_size != length) return read_error_fast("category name", file_path, fast_cascade, NULL);
+        if (read_size != length) return read_error("category name", file_path, cascade, file, NULL);
         name[length] = '\0';
 
-        fast_cascade->categories_names[i] = name;
+        cascade->categories_names[i] = name;
     }
 
     // parse bloomfilters
-    fast_cascade->bloomfilters = malloc(sizeof(Bloomfilter*) * category_size);
-    if (!fast_cascade->bloomfilters) {
+    cascade->bloomfilters = malloc(sizeof(Bloomfilter*) * category_size);
+    if (!cascade->bloomfilters) {
         fprintf(stderr, "Failed to allocate bloomfilters\n");
-        return clean_return(1, fast_cascade, free_fast_cascade);
+        return clean_return(2, cascade, free_cascade, file, fclose);
     }
 
     uint32_t unfinished_amount = 0;
@@ -81,17 +76,17 @@ FastCascade* parse_fast_cascade(FILE* file, char* file_path) {
 
     uint8_t hash_amount;
     read_size = fread(&hash_amount, sizeof(uint8_t), 1, file);
-    if (read_size != 1) return read_error_fast("first hash amount", file_path, fast_cascade, NULL);
+    if (read_size != 1) return read_error("first hash amount", file_path, cascade, file, NULL);
 
     while (1) {
         if (hash_amount == 0xFF) break; // done
 
         // realloc if another step is created
         if (i != 0) {
-            fast_cascade->bloomfilters = realloc(fast_cascade->bloomfilters, sizeof(Bloomfilter*) * category_size * (i + 1));
-            if (!fast_cascade->bloomfilters) {
+            cascade->bloomfilters = realloc(cascade->bloomfilters, sizeof(Bloomfilter*) * category_size * (i + 1));
+            if (!cascade->bloomfilters) {
                 fprintf(stderr, "Failed to reallocate bloomfilters\n");
-                return clean_return(1, fast_cascade, free_fast_cascade);
+                return clean_return(2, cascade, free_cascade, file, fclose);
             }
         }
 
@@ -109,7 +104,7 @@ FastCascade* parse_fast_cascade(FILE* file, char* file_path) {
                 bloomfilter = malloc(sizeof(Bloomfilter));
                 if (!bloomfilter) {
                     fprintf(stderr, "Memory allocation of bloomfilter failed\n");
-                    return clean_return(1, fast_cascade, free_fast_cascade);
+                    return clean_return(2, cascade, free_cascade, file, fclose);
                 }
 
                 // handle hash seeds
@@ -117,107 +112,64 @@ FastCascade* parse_fast_cascade(FILE* file, char* file_path) {
                 bloomfilter->hash_seeds = calloc(hash_amount, sizeof(uint8_t));
                 if (!bloomfilter->hash_seeds) {
                     fprintf(stderr, "Memory allocation of bloomfilter hash seeds failed\n");
-                    return clean_return(2, fast_cascade, free_fast_cascade, bloomfilter, free_bloomfilter);
+                    return clean_return(3, cascade, free_cascade, file, fclose, bloomfilter, free_bloomfilter);
                 }
 
                 for (uint8_t k = 0; k < hash_amount; k++) {
                     uint8_t hash_seed;
                     read_size = fread(&hash_seed, sizeof(uint8_t), 1, file);
-                    if (read_size != 1) return read_error_fast("hash seed", file_path, fast_cascade, bloomfilter);
+                    if (read_size != 1) return read_error("hash seed", file_path, cascade, file, bloomfilter);
                     bloomfilter->hash_seeds[k] = hash_seed;
                 }
 
                 // handle bf bits
                 uint32_t bf_size;
                 read_size = fread(&bf_size, sizeof(uint32_t), 1, file);
-                if (read_size != 1) return read_error_fast("bf size", file_path, fast_cascade, bloomfilter);
+                if (read_size != 1) return read_error("bf size", file_path, cascade, file, bloomfilter);
                 
                 bloomfilter->size = bf_size;
                 bloomfilter->bf = calloc(bf_size, sizeof(uint8_t));
                 if (!bloomfilter->bf) {
                     fprintf(stderr, "Memory allocation of bloomfilter bits failed\n");
-                    return clean_return(2, fast_cascade, free_fast_cascade, bloomfilter, free_bloomfilter);
+                    return clean_return(3, cascade, free_cascade, file, fclose, bloomfilter, free_bloomfilter);
                 }
 
                 for (uint32_t k = 0; k < bf_size; k++) {
                     uint8_t bf_part;
                     read_size = fread(&bf_part, sizeof(uint8_t), 1, file);
-                    if (read_size != 1) return read_error_fast("bf", file_path, fast_cascade, bloomfilter);
+                    if (read_size != 1) return read_error("bf", file_path, cascade, file, bloomfilter);
                     bloomfilter->bf[k] = bf_part;
                 }
             }
 
-            fast_cascade->bloomfilters[category_size * i + j] = bloomfilter;
+            cascade->bloomfilters[category_size * i + j] = bloomfilter;
 
             // read hash amount for next iteration
             read_size = fread(&hash_amount, sizeof(uint8_t), 1, file);
-            if (read_size != 1) return read_error_fast("hash amount", file_path, fast_cascade, NULL);
+            if (read_size != 1) return read_error("hash amount", file_path, cascade, file, NULL);
         }
 
         i++;
     }
 
-    fast_cascade->bloomfilters_size = i * fast_cascade->categories_size - unfinished_amount;
+    cascade->bloomfilters_size = i * cascade->categories_size - unfinished_amount;
 
     // parse last categories name
     uint8_t length;
     read_size = fread(&length, sizeof(uint8_t), 1, file);
-    if (read_size != 1) return read_error_fast("last category name length", file_path, fast_cascade, NULL);
+    if (read_size != 1) return read_error("last category name length", file_path, cascade, file, NULL);
 
     if (length != 0) {
         char* name = malloc(sizeof(char) * (length + 1));
         if (!name) {
             fprintf(stderr, "Failed to allocate last category name\n");
-            return clean_return(1, fast_cascade, free_fast_cascade);
+            return clean_return(2, cascade, free_cascade, file, fclose);
         }
         read_size = fread(name, sizeof(char), length, file);
-        if (read_size != length) return read_error_fast("last category name", file_path, fast_cascade, NULL);
+        if (read_size != length) return read_error("last category name", file_path, cascade, file, NULL);
         name[length] = '\0';
 
-        fast_cascade->last_category_name = name;
-    }
-
-    return fast_cascade;
-}
-
-Cascade* parse_cascade(char* file_path) {
-    FILE* file = fopen(file_path, "rb");
-    if (!file) {
-        fprintf(stderr, "Error opening file: %s\n", file_path);
-        return NULL;
-    }
-
-    Cascade* cascade = malloc(sizeof(Cascade));
-    if (!cascade) {
-        fprintf(stderr, "Failed to allocate cascade\n");
-        return clean_return(1, file, fclose);
-    }
-    cascade->algorithm = 0;
-    cascade->fast = NULL;
-    cascade->less_storage = NULL;
-
-    size_t read_size;
-
-    // algorithm
-    bool algorithm;
-    read_size = fread(&algorithm, sizeof(bool), 1, file);
-    if (read_size != 1) {
-        fprintf(stderr, "Failed to read algorithm from file: %s\n", file_path);
-        return clean_return(2, cascade, free_cascade, file, fclose);
-    }
-
-    if (algorithm) {
-        cascade->algorithm = algorithm;
-        cascade->fast = parse_fast_cascade(file, file_path); // TODO: implement parse_less_storage_cascade()
-        if (!cascade->fast) {
-            return clean_return(2, cascade, free_cascade, file, fclose);
-        }
-    } else {
-        cascade->algorithm = algorithm;
-        cascade->fast = parse_fast_cascade(file, file_path);
-        if (!cascade->fast) {
-            return clean_return(2, cascade, free_cascade, file, fclose);
-        }
+        cascade->last_category_name = name;
     }
 
     fclose(file);
@@ -227,10 +179,20 @@ Cascade* parse_cascade(char* file_path) {
 
 void free_cascade(Cascade* cascade) {
     if (cascade) {
-        if (cascade->algorithm)
-            free_fast_cascade(cascade->fast); // TODO: implement free_less_storage_cascade()
-        else
-            free_fast_cascade(cascade->fast);
+        if (cascade->categories_names) {
+            for (uint32_t i = 0; i < cascade->categories_size; i++)
+                if (cascade->categories_names[i])
+                    free(cascade->categories_names[i]);
+            free(cascade->categories_names);
+        }
+        if (cascade->bloomfilters) {
+            for (uint32_t i = 0; i < cascade->bloomfilters_size; i++)
+                if (cascade->bloomfilters[i])
+                    free_bloomfilter(cascade->bloomfilters[i]);
+            free(cascade->bloomfilters);
+        }
+        if (cascade->last_category_name)
+            free(cascade->last_category_name);
         free(cascade);
     }
 }

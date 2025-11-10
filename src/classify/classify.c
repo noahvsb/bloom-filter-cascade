@@ -1,27 +1,27 @@
 #include "classify.h"
 
-char* classify_fast(FastCascade* fast_cascade, char* element_name) {
+char* classify_fast(Cascade* cascade, char* element_name) {
     char* category_name = NULL;
 
     bool done = false;
-    for (uint32_t i = 0; i < fast_cascade->bloomfilters_size && !done; i++) {
-        Bloomfilter* bloomfilter = fast_cascade->bloomfilters[i];
+    for (uint32_t i = 0; i < cascade->bloomfilters_size && !done; i++) {
+        Bloomfilter* bloomfilter = cascade->bloomfilters[i];
 
         if (bloomfilter == NULL) continue; // empty
 
         if (!test_bloomfilter(bloomfilter, element_name)) {
-            category_name = fast_cascade->categories_names[i % fast_cascade->categories_size];
+            category_name = cascade->categories_names[i % cascade->categories_size];
             done = true;
         }
     }
 
     // if one couldn't be classified, it has to be in the last non-empty category
-    if (category_name == NULL) category_name = fast_cascade->last_category_name;
+    if (category_name == NULL) category_name = cascade->last_category_name;
 
     return category_name;
 }
 
-char* classify_less_storage(FastCascade* cascade, char* element_name) {
+char* classify_less_storage(Cascade* cascade, char* element_name) {
     char* category_name = NULL;
 
     bool done = false;
@@ -47,8 +47,8 @@ char* classify_less_storage(FastCascade* cascade, char* element_name) {
 }
 
 char* classify(Cascade* cascade, char* element_name) {
-    if (cascade->algorithm) return classify_less_storage(cascade->fast, element_name);
-    else return classify_fast(cascade->fast, element_name);
+    if (cascade->algorithm) return classify_less_storage(cascade, element_name);
+    else return classify_fast(cascade, element_name);
 }
 
 void run_classify(Cascade* cascade) {

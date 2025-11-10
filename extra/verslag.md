@@ -2,6 +2,8 @@
 
 ### snel
 
+#### opbouwen
+
 $C_1 \Rightarrow BF_1(C_2, C_3, ..., C_n) \Rightarrow C_1'$
 
 $C_2 \Rightarrow BF_2(C_1', C_3, C_3, ..., C_n) \Rightarrow C_2'$
@@ -18,6 +20,8 @@ Zo hebben we al veel elementen kunnen uitsluiten.
 
 Dan kunnen we de volgende cascadetrap analoog doen met $C_1', C_2', ..., C_n'$
 
+#### classificiëren
+
 Indien de categoriëen die we in een bloomfilter zullen steken allemaal leeg zijn, stopt ons algoritme.
 
 Indien alle categoriëen behalve 1 leeg zijn na het afwerken van de volledige trap, stopt ons algoritme ook.
@@ -26,25 +30,33 @@ Na het stoppen zal er 1 niet-lege categorie overblijven, hiermee kunnen wij dus 
 
 ### minder opslag
 
-Het vorige algoritme is simpel en snel, maar we kunnen beter doen omtrent opslag.
+Het vorige algoritme is simpel en snel, maar we kunnen beter doen omtrent opslag (voor grote verzamelingen).
 
-<TODO: herschrijf zodat het duidelijk is dat het meer een uitbreiding is op het snelle algoritme, i.p.v. een volledig nieuw algoritme>
+#### opbouwen
 
-#### cascadetraponderdeel voor $C_i$
+Het is een uitbreiding van het snelle algoritme.
 
-noem $C_1, ..., C_{i - 1}, C_{i + 1}, ..., C_n = \bar{C_i}$
+Noem $C_1, ..., C_{i - 1}, C_{i + 1}, ..., C_n = \bar{C_i}$
 
-$\bar{C_i} \Rightarrow BF_1(C_i) \Rightarrow \bar{C_i'}$
+Om $BF_i(\bar{C_i})$ uit het snelle algoritme te verkleinen zullen we $\bar{C_i}$ eerst filteren met een kleinere bloomfilter van $C_i$:
 
-$C_i \Rightarrow BF_2(\bar{C_i'}) \Rightarrow C_i'$
+$\bar{C_i} \Rightarrow BF_{i_1}(C_i) \Rightarrow \bar{C_i'}$
 
-Als het antwoord neen is bij $BF_1$, ga je over naar het onderdeel voor $C_{i + 1}$
+Nu kunnen we de volgende bloomfilter opstellen:
 
-Als het antwoord neen is bij $BF_2$, dan weet je dat het in $C_i$ zit.
+$C_i \Rightarrow BF_{i_2}(\bar{C_i'}) \Rightarrow C_i'$
 
-Indien het antwoord bij beide ja is, ga je ook over naar het volgende onderdeel.
+Dus $BF_i$ wordt vervangen door 2 bloomfilters $BF_{i_1}$ en $BF_{i_2}$. Maar deze gebruiken samen minder bits bij een grote verzameling en de grootte van de nieuwe categorieën ($C_1', C_2', ..., C_n'$ voor de eerste stap) zal gemiddeld hetzelfde zijn.
 
-Indien je nog geen antwoord hebt gekregen op het laatste onderdeel van de cascadetrap (die met $C_n$), zal je gewoon met $C_1', C_2', ..., C_n'$ de volgende trap maken.
+De rest van het opbouwen is analoog aan het vorige algoritme.
+
+#### classificiëren
+
+Indien $BF_{i_1}$ als antwoord neen geeft, skippen we $BF_{i_2}$ en gaan we direct naar $BF_{(i + 1)_1}$
+
+Indien het anwoord ja was checken we $BF_{i_2}$, indien neen zit het in $C_i$ en stoppen we, indien ja gaan we over naar $BF_{(i + 1)_1}$
+
+Indien $\bar{C_i}'$ leeg is, dan maken we geen $BF_{i_2}$, in dit geval als het antwoord ja is bij $BF_{i_1}$ weten we dat het element in categorie $C_i$ zit
 
 Note: De grootte van het cascade bestand is kleiner, maar dit algoritme gebruikt meer geheugen.
 

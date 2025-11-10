@@ -7,24 +7,13 @@
 #include "../bloomfilter/bloomfilter.h"
 #include "../tools/clean_return.h"
 
-typedef struct FastCascade {
+typedef struct Cascade {
+    bool algorithm;
     uint32_t categories_size;
     char** categories_names;
     uint32_t bloomfilters_size;
     Bloomfilter** bloomfilters;
     char* last_category_name;
-} FastCascade;
-
-typedef struct LessStorageCascade {
-    uint32_t categories_size;
-    char** categories_names;
-    // TODO
-} LessStorageCascade;
-
-typedef struct Cascade {
-    bool algorithm;
-    FastCascade* fast;
-    LessStorageCascade* less_storage;
 } Cascade;
 
 Cascade* parse_cascade(char* file_path);
