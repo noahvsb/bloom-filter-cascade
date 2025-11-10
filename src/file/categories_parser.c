@@ -81,6 +81,11 @@ CategoryList* parse_categories(char* file_path) {
         } 
         // new element in category
         else {
+            if (!list->categories_size) {
+                fprintf(stderr, "Incorrect syntax: the first line should be a category header\n");
+                return clean_return(2, list, free_categories, file, fclose);
+            }
+
             Category* category = list->categories[list->categories_size - 1];
             category->elements[category->size] = get_name_from_line(line, 0, line_length);
             if (!category->elements[category->size]) {

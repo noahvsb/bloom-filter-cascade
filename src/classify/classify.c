@@ -34,9 +34,7 @@ char* classify_less_storage(FastCascade* cascade, char* element_name) {
 
         Bloomfilter* bloomfilter2 = cascade->bloomfilters[i + 1];
 
-        if (bloomfilter2 == NULL) continue; // empty
-
-        if (!test_bloomfilter(bloomfilter2, element_name)) {
+        if (bloomfilter2 == NULL || !test_bloomfilter(bloomfilter2, element_name)) {
             category_name = cascade->categories_names[(i / 2) % cascade->categories_size];
             done = true;
         }

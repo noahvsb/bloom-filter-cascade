@@ -237,9 +237,9 @@ uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
                 free_categories(temp);
 
                 if (new_categories[i]->size == 0) empty_count++;
-
-                end_index++;
             }
+
+            end_index++;
         }
 
         // update list

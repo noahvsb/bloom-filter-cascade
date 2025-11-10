@@ -1,11 +1,11 @@
 main.c
 arguments/arguments_parser.c
 arguments/arguments_parser.h
-classify/classify.c
-classify/classify.h
 bloomfilter/bloomfilter.c
 bloomfilter/bloomfilter.h
 bloomfilter/bloomfilter_cascade.c
+classify/classify.c
+classify/classify.h
 file/cascade_parser.c
 file/cascade_parser.h
 file/cascade_writer.c
