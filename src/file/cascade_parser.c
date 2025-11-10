@@ -36,18 +36,18 @@ Cascade* parse_cascade(char* file_path) {
     cascade->algorithm = algorithm;
     
     // parse categories names
-    uint32_t category_size;
-    read_size = fread(&category_size, sizeof(uint32_t), 1, file);
+    uint32_t categories_size;
+    read_size = fread(&categories_size, sizeof(uint32_t), 1, file);
     if (read_size != 1) return read_error("category size", file_path, cascade, file, NULL);
 
-    cascade->categories_size = category_size;
-    cascade->categories_names = malloc(sizeof(char*) * category_size);
+    cascade->categories_size = categories_size;
+    cascade->categories_names = malloc(sizeof(char*) * categories_size);
     if (!cascade->categories_names) {
         fprintf(stderr, "Failed to allocate categories names\n");
         return clean_return(2, cascade, free_cascade, file, fclose);
     }
 
-    for (uint32_t i = 0; i < category_size; i++) {
+    for (uint32_t i = 0; i < categories_size; i++) {
         uint8_t length;
         read_size = fread(&length, sizeof(uint8_t), 1, file);
         if (read_size != 1) return read_error("category name length", file_path, cascade, file, NULL);
@@ -65,94 +65,80 @@ Cascade* parse_cascade(char* file_path) {
     }
 
     // parse bloomfilters
-    cascade->bloomfilters = malloc(sizeof(Bloomfilter*) * category_size);
+    cascade->bloomfilters = malloc(sizeof(Bloomfilter*) * categories_size);
     if (!cascade->bloomfilters) {
         fprintf(stderr, "Failed to allocate bloomfilters\n");
         return clean_return(2, cascade, free_cascade, file, fclose);
     }
 
-    uint32_t unfinished_amount = 0;
-    uint32_t i = 0;
-
-    uint8_t hash_amount;
-    read_size = fread(&hash_amount, sizeof(uint8_t), 1, file);
-    if (read_size != 1) return read_error("first hash amount", file_path, cascade, file, NULL);
+    uint32_t leftover_size = categories_size;
 
     while (1) {
+        uint8_t hash_amount;
+        read_size = fread(&hash_amount, sizeof(uint8_t), 1, file);
+        if (read_size != 1) return read_error("first hash amount", file_path, cascade, file, NULL);
+
         if (hash_amount == 0xFF) break; // done
 
-        // realloc if another step is created
-        if (i != 0) {
-            cascade->bloomfilters = realloc(cascade->bloomfilters, sizeof(Bloomfilter*) * category_size * (i + 1));
+        // realloc if needed
+        if (leftover_size == 0) {
+            cascade->bloomfilters = realloc(cascade->bloomfilters, sizeof(Bloomfilter*) * (cascade->bloomfilters_size + categories_size));
             if (!cascade->bloomfilters) {
                 fprintf(stderr, "Failed to reallocate bloomfilters\n");
                 return clean_return(2, cascade, free_cascade, file, fclose);
             }
+            leftover_size = categories_size;
         }
 
-        // parse the bloomfilters for this step
-        for (uint32_t j = 0; j < category_size; j++) {
-            Bloomfilter* bloomfilter = NULL;
+        Bloomfilter* bloomfilter = NULL;
 
-            if (hash_amount == 0xFF) {
-                unfinished_amount = category_size - j;
-                break;
+        // non-empty bloomfilter
+        if (hash_amount != 0) {
+            bloomfilter = malloc(sizeof(Bloomfilter));
+            if (!bloomfilter) {
+                fprintf(stderr, "Memory allocation of bloomfilter failed\n");
+                return clean_return(2, cascade, free_cascade, file, fclose);
             }
 
-            // non-empty bloomfilter
-            if (hash_amount != 0) {
-                bloomfilter = malloc(sizeof(Bloomfilter));
-                if (!bloomfilter) {
-                    fprintf(stderr, "Memory allocation of bloomfilter failed\n");
-                    return clean_return(2, cascade, free_cascade, file, fclose);
-                }
-
-                // handle hash seeds
-                bloomfilter->hash_amount = hash_amount;
-                bloomfilter->hash_seeds = calloc(hash_amount, sizeof(uint8_t));
-                if (!bloomfilter->hash_seeds) {
-                    fprintf(stderr, "Memory allocation of bloomfilter hash seeds failed\n");
-                    return clean_return(3, cascade, free_cascade, file, fclose, bloomfilter, free_bloomfilter);
-                }
-
-                for (uint8_t k = 0; k < hash_amount; k++) {
-                    uint8_t hash_seed;
-                    read_size = fread(&hash_seed, sizeof(uint8_t), 1, file);
-                    if (read_size != 1) return read_error("hash seed", file_path, cascade, file, bloomfilter);
-                    bloomfilter->hash_seeds[k] = hash_seed;
-                }
-
-                // handle bf bits
-                uint32_t bf_size;
-                read_size = fread(&bf_size, sizeof(uint32_t), 1, file);
-                if (read_size != 1) return read_error("bf size", file_path, cascade, file, bloomfilter);
-                
-                bloomfilter->size = bf_size;
-                bloomfilter->bf = calloc(bf_size, sizeof(uint8_t));
-                if (!bloomfilter->bf) {
-                    fprintf(stderr, "Memory allocation of bloomfilter bits failed\n");
-                    return clean_return(3, cascade, free_cascade, file, fclose, bloomfilter, free_bloomfilter);
-                }
-
-                for (uint32_t k = 0; k < bf_size; k++) {
-                    uint8_t bf_part;
-                    read_size = fread(&bf_part, sizeof(uint8_t), 1, file);
-                    if (read_size != 1) return read_error("bf", file_path, cascade, file, bloomfilter);
-                    bloomfilter->bf[k] = bf_part;
-                }
+            // handle hash seeds
+            bloomfilter->hash_amount = hash_amount;
+            bloomfilter->hash_seeds = calloc(hash_amount, sizeof(uint8_t));
+            if (!bloomfilter->hash_seeds) {
+                fprintf(stderr, "Memory allocation of bloomfilter hash seeds failed\n");
+                return clean_return(3, cascade, free_cascade, file, fclose, bloomfilter, free_bloomfilter);
             }
 
-            cascade->bloomfilters[category_size * i + j] = bloomfilter;
+            for (uint8_t k = 0; k < hash_amount; k++) {
+                uint8_t hash_seed;
+                read_size = fread(&hash_seed, sizeof(uint8_t), 1, file);
+                if (read_size != 1) return read_error("hash seed", file_path, cascade, file, bloomfilter);
+                bloomfilter->hash_seeds[k] = hash_seed;
+            }
 
-            // read hash amount for next iteration
-            read_size = fread(&hash_amount, sizeof(uint8_t), 1, file);
-            if (read_size != 1) return read_error("hash amount", file_path, cascade, file, NULL);
+            // handle bf bits
+            uint32_t bf_size;
+            read_size = fread(&bf_size, sizeof(uint32_t), 1, file);
+            if (read_size != 1) return read_error("bf size", file_path, cascade, file, bloomfilter);
+            
+            bloomfilter->size = bf_size;
+            bloomfilter->bf = calloc(bf_size, sizeof(uint8_t));
+            if (!bloomfilter->bf) {
+                fprintf(stderr, "Memory allocation of bloomfilter bits failed\n");
+                return clean_return(3, cascade, free_cascade, file, fclose, bloomfilter, free_bloomfilter);
+            }
+
+            for (uint32_t k = 0; k < bf_size; k++) {
+                uint8_t bf_part;
+                read_size = fread(&bf_part, sizeof(uint8_t), 1, file);
+                if (read_size != 1) return read_error("bf", file_path, cascade, file, bloomfilter);
+                bloomfilter->bf[k] = bf_part;
+            }
         }
 
-        i++;
+        cascade->bloomfilters[cascade->bloomfilters_size] = bloomfilter;
+        cascade->bloomfilters_size++;
+        leftover_size--;
     }
-
-    cascade->bloomfilters_size = i * cascade->categories_size - unfinished_amount;
 
     // parse last categories name
     uint8_t length;
