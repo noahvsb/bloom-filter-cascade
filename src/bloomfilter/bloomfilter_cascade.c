@@ -254,7 +254,7 @@ uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
             category->elements = new_category->elements;
         }
 
-        list->elements_size = new_size;
+        list->elements_size = new_size; // if end_index < 1, the size won't be correct, but it's not needed anymore anyways
 
         free_new_categories(new_categories, list->categories_size, false);
 

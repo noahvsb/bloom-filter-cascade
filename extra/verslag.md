@@ -46,7 +46,7 @@ Nu kunnen we de volgende bloomfilter opstellen:
 
 $C_i \Rightarrow BF_{i_2}(\bar{C_i'}) \Rightarrow C_i'$
 
-Dus $BF_i$ wordt vervangen door 2 bloomfilters $BF_{i_1}$ en $BF_{i_2}$. Maar deze gebruiken samen minder bits bij een grote verzameling en de grootte van de nieuwe categorieën ($C_1', C_2', ..., C_n'$ voor de eerste stap) zal gemiddeld hetzelfde zijn.
+Dus $BF_i$ wordt vervangen door 2 bloomfilters $BF_{i_1}$ en $BF_{i_2}$. Maar deze gebruiken samen minder bits bij een grote verzameling met ongeveer gelijk verdeelde categoriëen en de grootte van de nieuwe categorieën ($C_1', C_2', ..., C_n'$ voor de eerste stap) zal gemiddeld hetzelfde zijn.
 
 De rest van het opbouwen is analoog aan het vorige algoritme.
 
