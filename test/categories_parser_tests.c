@@ -60,5 +60,14 @@ void test_parse_categories_failcheck(void) {
     TEST_CHECK(list == NULL);
 
     free_categories(list);
+
+    // create an empty file
+    file_path = "test/data/temp_empty.txt";
+    fclose(fopen(file_path, "wb"));
+
+    list = parse_categories(file_path);
+    TEST_CHECK(list->categories_size == 0);
+
+    remove(file_path);
 }
 

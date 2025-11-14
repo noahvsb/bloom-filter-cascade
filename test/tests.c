@@ -19,6 +19,7 @@ TEST_LIST = {
 
     { "bloomfilter cascade: create fast", test_bloomfilter_cascade_create_fast },
     { "bloomfilter cascade: create less storage", test_bloomfilter_cascade_create_less_storage },
+    { "bloomfilter cascade: failcheck", test_bloomfilter_cascade_failcheck },
 
     { "cascade parser: parse", test_parse_cascade },
     { "cascade parser: parse failcheck", test_parse_cascade_failcheck },

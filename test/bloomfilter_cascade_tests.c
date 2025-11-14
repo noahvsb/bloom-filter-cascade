@@ -40,3 +40,21 @@ void test_bloomfilter_cascade_create_less_storage(void) {
     free_categories(list);
     remove(output_file_path);
 }
+
+void test_bloomfilter_cascade_failcheck(void) {
+    srand(123);
+
+    // create empty file
+    char* input_file_path = "test/data/temp_empty.txt";
+    fclose(fopen(input_file_path, "wb"));
+    char* output_file_path = "test/data/temp_empty.bfc";
+
+    CategoryList* list = parse_categories(input_file_path);
+
+    printf("\n");
+    uint8_t status = create_bloomfilter_cascade(output_file_path, list, 1, 3);
+    TEST_CHECK(status == 0);
+
+    free_categories(list);
+    remove(input_file_path); remove(output_file_path);
+}

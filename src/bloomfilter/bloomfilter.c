@@ -17,8 +17,8 @@ Bloomfilter* create_bloomfilter(CategoryList* list, int32_t except, int32_t only
     if (use_except && use_only) use_only = false;
 
     // calculate amount of elements
-    uint32_t except_size = use_except ? list->categories[except]->size : 0;
-    uint32_t m           = use_only   ? list->categories[only]->size   : list->elements_size - except_size;
+    uint32_t except_size = use_except && list->categories[except] ? list->categories[except]->size : 0;
+    uint32_t m = use_only ? list->categories[only]->size : list->elements_size - except_size;
 
     // calculate amount of bits
     uint32_t n8 = m * k / log(2); // amount of bits (n = m * k / ln 2 rounded down)

@@ -113,7 +113,7 @@ uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
     bool first_step = true;
     uint32_t empty_count = 0;
 
-    while (empty_count < list->categories_size - 1) {
+    while (empty_count < list->categories_size - 1 && list->categories_size > 0) {
         // loop for 1 cascade step
         for (uint32_t i = 0; i < list->categories_size && empty_count < list->categories_size - 1; i++) {
             Category* category = list->categories[i];
@@ -147,6 +147,11 @@ uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
 
                 // update categories and store in temp
                 for (uint32_t j = 0; j < list->categories_size; j++) {
+                    if (j == i) {
+                        temp->categories[j] = NULL;
+                        continue;
+                    }
+
                     temp->categories[j] = malloc(sizeof(Category));
                     if (!temp->categories[j]) {
                         fprintf(stderr, "Memory allocation of temporary category failed\n");
@@ -156,8 +161,6 @@ uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
                     temp->categories[j]->leftover_size = 0;
                     temp->categories[j]->elements = NULL;
                     temp->categories[j]->name = NULL;
-
-                    if (j == i) continue;
 
                     if (update_category(list->categories[j], bloomfilter1, temp->categories[j]))
                         return !clean_return(2, file, fclose, bloomfilter1, free_bloomfilter, temp, free_categories);
