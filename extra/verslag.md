@@ -36,7 +36,7 @@ Het vorige algoritme is simpel en snel, maar we kunnen beter doen omtrent opslag
 
 Het is een uitbreiding van het snelle algoritme.
 
-Noem $C_1, ..., C_{i - 1}, C_{i + 1}, ..., C_n = \bar{C_i}$
+Noem $C_1', ..., C_{i - 1}', C_{i + 1}, ..., C_n = \bar{C_i}$
 
 Om $BF_i(\bar{C_i})$ uit het snelle algoritme te verkleinen zullen we $\bar{C_i}$ eerst filteren met een kleinere bloomfilter van $C_i$:
 
@@ -46,7 +46,7 @@ Nu kunnen we de volgende bloomfilter opstellen:
 
 $C_i \Rightarrow BF_{i_2}(\bar{C_i'}) \Rightarrow C_i'$
 
-Dus $BF_i$ wordt vervangen door 2 bloomfilters $BF_{i_1}$ en $BF_{i_2}$. Maar deze gebruiken samen minder bits bij een grote verzameling met ongeveer gelijk verdeelde categoriëen en de grootte van de nieuwe categorieën ($C_1', C_2', ..., C_n'$ voor de eerste stap) zal gemiddeld hetzelfde zijn.
+Dus $BF_i$ wordt vervangen door 2 bloomfilters $BF_{i_1}$ en $BF_{i_2}$. Maar deze gebruiken samen minder bits bij een grote verzameling met ongeveer gelijk verdeelde categoriëen en de grootte van de nieuwe categorieën ($C_1', C_2', ..., C_n'$ na de eerste stap) zal gemiddeld hetzelfde zijn.
 
 De rest van het opbouwen is analoog aan het vorige algoritme.
 

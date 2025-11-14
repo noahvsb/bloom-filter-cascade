@@ -109,47 +109,11 @@ uint8_t fast_algorithm(FILE* file, CategoryList* list, uint8_t k) {
     return 0;
 }
 
-void free_new_categories(Category** new_categories, uint32_t size, bool elements_as_well) {
-    if (new_categories) {
-        for (uint32_t i = 0; i < size; i++) {
-            if (new_categories[i]) {
-                if (elements_as_well)
-                    free_elements(new_categories[i]);
-                free(new_categories[i]);
-            }
-        }
-        free(new_categories);
-    }
-}
-
 uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
     bool first_step = true;
     uint32_t empty_count = 0;
 
     while (empty_count < list->categories_size - 1) {
-        // malloc new categories
-        Category** new_categories = malloc(sizeof(Category*) * list->categories_size);
-        if (!new_categories) {
-            fprintf(stderr, "Memory allocation of temporary list failed\n");
-            return !clean_return(1, file, fclose);
-        }
-        // malloc each new category
-        for (uint32_t i = 0; i < list->categories_size; i++) {
-            new_categories[i] = malloc(sizeof(Category));
-            if (!new_categories[i]) {
-                fprintf(stderr, "Memory allocation of new category failed\n");
-                free_new_categories(new_categories, list->categories_size, true);
-                return !clean_return(1, file, fclose);
-            }
-            new_categories[i]->size = 0;
-            new_categories[i]->leftover_size = 0;
-            new_categories[i]->elements = NULL;
-            new_categories[i]->name = NULL;
-        }
-        uint32_t new_size = 0;
-
-        uint32_t end_index = 0; // amount of actual iteration of the loop
-
         // loop for 1 cascade step
         for (uint32_t i = 0; i < list->categories_size && empty_count < list->categories_size - 1; i++) {
             Category* category = list->categories[i];
@@ -162,10 +126,7 @@ uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
             } else {
                 // create and write first bloomfilter
                 Bloomfilter* bloomfilter1 = create_bloomfilter(list, -1, i, k);
-                if (!bloomfilter1) {
-                    free_new_categories(new_categories, list->categories_size, true);
-                    return !clean_return(1, file, fclose);
-                }
+                if (!bloomfilter1) return !clean_return(1, file, fclose);
                 write_bloomfilter(bloomfilter1, file);
                 printf("Wrote bloomfilter 1 for %s to file\n    - size: %d -- hash: %d\n", list->categories[i]->name, bloomfilter1->size, bloomfilter1->hash_amount);
 
@@ -173,7 +134,6 @@ uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
                 CategoryList* temp = malloc(sizeof(CategoryList));
                 if (!temp) {
                     fprintf(stderr, "Memory allocation of temporary list failed\n");
-                    free_new_categories(new_categories, list->categories_size, true);
                     return !clean_return(2, file, fclose, bloomfilter1, free_bloomfilter);
                 }
                 temp->elements_size = 0;
@@ -182,7 +142,6 @@ uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
                 temp->categories = malloc(sizeof(Category*) * temp->categories_size);
                 if (!temp->categories) {
                     fprintf(stderr, "Memory allocation of temporary list categories failed\n");
-                    free_new_categories(new_categories, list->categories_size, true);
                     return !clean_return(3, file, fclose, bloomfilter1, free_bloomfilter, temp, free_categories);
                 }
 
@@ -191,7 +150,6 @@ uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
                     temp->categories[j] = malloc(sizeof(Category));
                     if (!temp->categories[j]) {
                         fprintf(stderr, "Memory allocation of temporary category failed\n");
-                        free_new_categories(new_categories, list->categories_size, true);
                         return !clean_return(3, file, fclose, bloomfilter1, free_bloomfilter, temp, free_categories);
                     }
                     temp->categories[j]->size = 0;
@@ -201,10 +159,8 @@ uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
 
                     if (j == i) continue;
 
-                    if (update_category(list->categories[j], bloomfilter1, temp->categories[j])) {
-                        free_new_categories(new_categories, list->categories_size, true);
+                    if (update_category(list->categories[j], bloomfilter1, temp->categories[j]))
                         return !clean_return(2, file, fclose, bloomfilter1, free_bloomfilter, temp, free_categories);
-                    }
 
                     temp->elements_size += temp->categories[j]->size;
                 }
@@ -217,46 +173,23 @@ uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
                 else {
                     Bloomfilter* bloomfilter2 = create_bloomfilter(temp, i, -1, k);
                     if (!bloomfilter2) {
-                        free_new_categories(new_categories, list->categories_size, true);
                         return !clean_return(2, file, fclose, temp, free_categories);
                     }
                     write_bloomfilter(bloomfilter2, file);
                     printf("Wrote bloomfilter 2 for %s to file\n    - size: %d -- hash: %d\n", list->categories[i]->name, bloomfilter2->size, bloomfilter2->hash_amount);
 
                     // update category
-                    if (update_category(category, bloomfilter2, new_categories[i])) {
-                        free_new_categories(new_categories, list->categories_size, true);
-                        return !clean_return(3, file, fclose, bloomfilter2, free_bloomfilter, temp, free_categories);
-                    }
+                    if (update_category(category, bloomfilter2, NULL)) return !clean_return(3, file, fclose, temp, free_categories, bloomfilter2, free_bloomfilter);
+                    list->elements_size -= old_size - category->size;
 
-                    new_size += new_categories[i]->size;
+                    if (category->size == 0) empty_count++;
 
                     free_bloomfilter(bloomfilter2);
                 }
 
                 free_categories(temp);
-
-                if (new_categories[i]->size == 0) empty_count++;
             }
-
-            end_index++;
         }
-
-        // update list
-        for (uint32_t i = 0; i < end_index; i++) {
-            Category* category = list->categories[i];
-            Category* new_category = new_categories[i];
-
-            // free old elements and set new values
-            free_elements(category);
-            category->size = new_category->size;
-            category->leftover_size = new_category->leftover_size;
-            category->elements = new_category->elements;
-        }
-
-        list->elements_size = new_size; // if end_index < 1, the size won't be correct, but it's not needed anymore anyways
-
-        free_new_categories(new_categories, list->categories_size, false);
 
         printf("\n");
 
