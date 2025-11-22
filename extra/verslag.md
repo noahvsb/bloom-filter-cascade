@@ -182,11 +182,11 @@ indien een bloomfilter leeg is (doordat de bijhorende categorie leeg is), is er 
 
 Voor de categorie namen is er een limitatie van 256 chars bij zowel `train` als `classify`
 
-Indien een ingegeven element bij `classify` in geen enkele categorie zit, dan zal deze geclassificeerd worden als een random categorie. Meestal de eerste waarvan een cascade wordt gemaakt.
+Indien een ingegeven element bij `classify` in geen enkele categorie zit, dan zal deze geclassificeerd worden als een random categorie.
 
 Voor de nummers (aantal elementen, aantal bits ...) is er een limitatie van 32 bits (0 - 4,294,967,295)
 
-Bv. het aantal elementen in `large.txt` is 25,000,000 en pas vanaf we een $k \geq 120$ hebben zal het aantal bits daar groter zijn dan de limitatie, maar dit is een onrealistische situatie, in quasi alle gevallen zal $k \leq 8$ zijn en dan kunnen we 372,130,558 elementen hebben, dus deze limiet is voldoende. 
+Bv. het aantal elementen in `large.txt` is 25,000,000 en pas vanaf we een $k \geq 120$ hebben zal het aantal bits voor een bloomfilter voor alle categoriëen (wat we nooit creëeren) daar groter zijn dan de limitatie, maar ik gebruik $k \leq 4$ en dan kan je 744,261,117 elementen hebben, dus deze limiet is voldoende. 
 
 Ik kan het verhogen naar 64 bit unsigned integers, maar dat zal het aantal geheugen onnodeloos vergroten, aangezien de laatste 32 bits quasi nooit gebruikt zullen worden en we veel zo'n nummers zullen gebruiken. 
 
