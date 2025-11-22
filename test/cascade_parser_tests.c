@@ -4,7 +4,7 @@
 #include "../src/file/cascade_parser.h"
 
 void test_parse_cascade(void) {
-    char* file_path = "test/data/test01.bfc"; // bloomfilter cascade of test/data/test.txt with algorithm = 0 and k = 1
+    char* file_path = "test/data/test0.bfc"; // bloomfilter cascade of test/data/test.txt with algorithm = 0
 
     Cascade* cascade = parse_cascade(file_path);
     TEST_CHECK(cascade->algorithm == 0);

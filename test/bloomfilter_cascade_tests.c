@@ -11,7 +11,7 @@ void test_bloomfilter_cascade_create_fast(void) {
     CategoryList* list = parse_categories(input_file_path);
 
     printf("\n");
-    uint8_t status = create_bloomfilter_cascade(output_file_path, list, 0, 3);
+    uint8_t status = create_bloomfilter_cascade(output_file_path, list, 0);
     TEST_CHECK(status == 0);
 
     // not checking the content of the cascade file:
@@ -30,7 +30,7 @@ void test_bloomfilter_cascade_create_less_storage(void) {
     CategoryList* list = parse_categories(input_file_path);
 
     printf("\n");
-    uint8_t status = create_bloomfilter_cascade(output_file_path, list, 1, 3);
+    uint8_t status = create_bloomfilter_cascade(output_file_path, list, 1);
     TEST_CHECK(status == 0);
 
     // not checking the content of the cascade file:
@@ -52,7 +52,7 @@ void test_bloomfilter_cascade_failcheck(void) {
     CategoryList* list = parse_categories(input_file_path);
 
     printf("\n");
-    uint8_t status = create_bloomfilter_cascade(output_file_path, list, 1, 3);
+    uint8_t status = create_bloomfilter_cascade(output_file_path, list, 1);
     TEST_CHECK(status == 0);
 
     free_categories(list);

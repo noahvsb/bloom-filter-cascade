@@ -44,7 +44,7 @@ bool test_bloomfilter(Bloomfilter* bloomfilter, char* element_name);
  * @returns 0 if success
  * @returns 1 if fail
 */
-uint8_t create_bloomfilter_cascade(char* file_path, CategoryList* list, bool algorithm, uint8_t k);
+uint8_t create_bloomfilter_cascade(char* file_path, CategoryList* list, bool algorithm);
 
 void free_bloomfilter(Bloomfilter* bloomfilter);
 

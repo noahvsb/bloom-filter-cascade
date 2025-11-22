@@ -60,6 +60,8 @@ Indien $\bar{C_i}'$ leeg is, dan maken we geen $BF_{i_2}$, in dit geval als het 
 
 Note: De grootte van het cascade bestand is kleiner, maar dit algoritme gebruikt meer geheugen.
 
+<TODO: Snel algoritme is amper sneller, mss hernoemen naar "eenvoudig algoritme" ofzo>
+
 ## # bits en hashfuncties
 
 \# hashfuncties optimaal: $k = \frac{n}{m} * \ln{2}$ met $m = \text{\# elementen}$ en $n = \text{\# bits}$
@@ -106,27 +108,73 @@ Omdat de afrondingen dan veel minder doorwegen. Nu heb ik afrondingen op mijn aa
 
 Bv. een afronding van 5.4 naar 5 bij de k zal meer verschil geven dan een afronding van 1234567.4 naar 1234567, niet alleen doordat het getal daardoor relatief minder verkleint, maar ook omdat ik die n toch moet afronden naar een getal deelbaar door 8 (aangezien ik een `uint8_t*` gebruik voor de bloomfilter bits). Dus 1234567.4 wordt 1234567, maar dan 1234568 om deelbaar door 8 te worden, dus de afronding maakt geen verschil.
 
+### benchmarks
+
+Ik zal geen rekening houden met tijd, aangezien de opslagruimte van de files het belangrijkst is.
+
+Om te zien of k aan te passen per cascadetrap iets hielp heb ik op het eenvoudig algoritme met de large.txt de volgende benchmarks uitgevoerd:
+
+k = 3 voor de eerste cascadetrap:
+
+**k** 57 MB, **k++** 58 MB, **k--** 57 MB
+
+Conclusie, gebruik dezelfde k bij elke cascadetrap.
+
+Hypothese, de optimale k is quasi hetzelfde, onafhankelijk de grootte van de verzameling.
+
+#### snel algoritme
+
+##### large.txt
+
+**k=1** 53 MB, **k=2** 53 MB, **k=3** 57 MB, **k=4** 64 MB, **k=5** 73 MB
+
+##### medium.txt
+
+**k=1** 6.3 MB, **k=2** 7.0 MB, **k=3** 8.1 MB, **k=4** 9.5 MB, **k=5** 12 MB
+
+##### small.txt
+
+**k=1** 128 KB, **k=2** 7144 KB, **k=3** 168 KB, **k=4** 200 KB, **k=5** 236 KB
+
+Conclusie, de optimale k voor het snel algoritme is 1 en mijn hypothese klopt.
+
+#### minder opslag algoritme
+
+Aangezien ik heb geconcludeerd dat de hypothese klopt, is het enkel nodig om de large.txt te benchmarken, maar voor volledigheid zal ik ook de rest doen.
+
+k1 wordt gebruikt voor $BF_{i_1}$ en k2 voor $BF_{i_2}$
+
+![benchmark large](img/benchmark_large.png)
+
+![benchmark medium](img/benchmark_medium.png)
+
+![benchmark small](img/benchmark_small.png)
+
+We zien dat (3, 4) het beste is voor large en medium en (1, 2) voor small.
+
+Maar de hypothese klopt nog steeds, aangezien de size voor (3, 4) bij small amper scheelt met die voor (1, 2), dus neem ik overal (3, 4).
+
 ## bestandsformaat cascade
 
 vooraf:
-- 8 bits die het soort algoritme aangeven (0 = snel algoritme, 1 = algoritme met weinig opslag)
-- aantal categoriëen (32 bits) = aantal bloomfilters per trap
-- namen van categoriëen in juiste volgorde (8 bits lengte + 8 bits * len)
+- 1 byte die het soort algoritme aangeven (0 = snel algoritme, 1 = algoritme met weinig opslag)
+- aantal categoriëen (4 byte) = aantal bloomfilters per trap
+- namen van categoriëen in juiste volgorde (1 byte lengte + 1 byte * lengte)
 
 elke cascade trap:
 - /
 
 elke bloomfilter binnen de trap:
-- aantal hashfuncties in bloomfilter (8 bits)
-- seeds voor hashfuncties (8 bits seeds * aantal hashfuncties)
-- aantal bits in bloomfilter / 8 (32 bits)
-- bloomfilter bits (veelvoud van 8)
+- aantal hashfuncties in bloomfilter (1 byte)
+- seeds voor hashfuncties (1 byte seeds * aantal hashfuncties)
+- aantal bits in bloomfilter / 8 (4 byte)
+- bloomfilter bits (1 byte * aantal bits / 8)
 
-indien de categorie horende bij een bloomfilter leeg is, zijn er 8 x 0 bits voor het aantal hashfuncties en dan ga je over naar de volgende bloomfilter
+indien een bloomfilter leeg is (doordat de bijhorende categorie leeg is), is er 1 byte aan 0-bits voor het aantal hashfuncties en dan ga je over naar de volgende bloomfilter
 
-- einde van bloomfilters aankondigen met 8 x 1-bits, aangezien 8 x 0-bits een lege categorie betekent
+- einde van bloomfilters aankondigen met 1 byte aan 1-bits
 
-- dan eindigen met de laatste niet lege categorie naam (8 bits lengte + 8 bits * len) (indien in dezelfde trap alle niet-lege categoriëen simultaan leeg geworden zijn, dan is de lengte 0)
+- dan eindigen met de laatste niet lege categorie naam (1 byte lengte + 1 byte * lengte)
 
 ## limitaties
 

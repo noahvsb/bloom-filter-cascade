@@ -62,7 +62,7 @@ uint8_t update_category(Category* category, Bloomfilter* bloomfilter, Category* 
     return 0;
 }
 
-uint8_t fast_algorithm(FILE* file, CategoryList* list, uint8_t k) {
+uint8_t fast_algorithm(FILE* file, CategoryList* list) {
     bool first_step = true;
     uint32_t empty_count = 0;
 
@@ -77,7 +77,7 @@ uint8_t fast_algorithm(FILE* file, CategoryList* list, uint8_t k) {
                 if (first_step) empty_count++;
             } else {
                 // create and write bloomfilter
-                Bloomfilter* bloomfilter = create_bloomfilter(list, i, -1, k);
+                Bloomfilter* bloomfilter = create_bloomfilter(list, i, -1, 1);
                 if (!bloomfilter) return !clean_return(1, file, fclose);
                 write_bloomfilter(bloomfilter, file);
                 printf("Wrote bloomfilter for %s to file\n    - size: %d -- hash: %d\n", list->categories[i]->name, bloomfilter->size, bloomfilter->hash_amount);
@@ -109,7 +109,7 @@ uint8_t fast_algorithm(FILE* file, CategoryList* list, uint8_t k) {
     return 0;
 }
 
-uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
+uint8_t less_storage_algorithm(FILE* file, CategoryList* list) {
     bool first_step = true;
     uint32_t empty_count = 0;
 
@@ -125,7 +125,7 @@ uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
                 if (first_step) empty_count++;
             } else {
                 // create and write first bloomfilter
-                Bloomfilter* bloomfilter1 = create_bloomfilter(list, -1, i, k);
+                Bloomfilter* bloomfilter1 = create_bloomfilter(list, -1, i, 3);
                 if (!bloomfilter1) return !clean_return(1, file, fclose);
                 write_bloomfilter(bloomfilter1, file);
                 printf("Wrote bloomfilter 1 for %s to file\n    - size: %d -- hash: %d\n", list->categories[i]->name, bloomfilter1->size, bloomfilter1->hash_amount);
@@ -174,7 +174,7 @@ uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
                 if (temp->elements_size == 0)
                     fwrite(&(uint8_t){0}, sizeof(uint8_t), 1, file); // write 8 x 0 bits if temp is empty
                 else {
-                    Bloomfilter* bloomfilter2 = create_bloomfilter(temp, i, -1, k);
+                    Bloomfilter* bloomfilter2 = create_bloomfilter(temp, i, -1, 4);
                     if (!bloomfilter2) {
                         return !clean_return(2, file, fclose, temp, free_categories);
                     }
@@ -211,14 +211,14 @@ uint8_t less_storage_algorithm(FILE* file, CategoryList* list, uint8_t k) {
     return 0;
 }
 
-uint8_t create_bloomfilter_cascade(char* file_path, CategoryList* list, bool algorithm, uint8_t k) {
+uint8_t create_bloomfilter_cascade(char* file_path, CategoryList* list, bool algorithm) {
     FILE* file = write_start(file_path, list, algorithm);
     if (!file) return 1;
 
     if (algorithm) {
-        if (less_storage_algorithm(file, list, k)) return 1;
+        if (less_storage_algorithm(file, list)) return 1;
     } else {
-        if (fast_algorithm(file, list, k)) return 1;
+        if (fast_algorithm(file, list)) return 1;
     }
 
     printf("Succesfully wrote bloomfilter cascade to: %s\n", file_path);

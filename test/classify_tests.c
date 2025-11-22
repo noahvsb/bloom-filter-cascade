@@ -32,13 +32,11 @@ void test_classify_large(void) {
 }
 
 void test_classify_fast(void) {
-    test_classify_template("test/data/test.txt", "test/data/test01.bfc", false);
-    test_classify_template("test/data/test.txt", "test/data/test03.bfc", false);
+    test_classify_template("test/data/test.txt", "test/data/test0.bfc", false);
 }
 
-// fun fact: more storage in this case, because test/data/test.txt is pretty small
+// fun fact: more storage in this case, because test/data/test.txt is very small
 void test_classify_less_storage(void) {
-    test_classify_template("test/data/test.txt", "test/data/test11.bfc", false);
-    test_classify_template("test/data/test.txt", "test/data/test13.bfc", false);
+    test_classify_template("test/data/test.txt", "test/data/test1.bfc", false);
 }
 
