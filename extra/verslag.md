@@ -1,8 +1,8 @@
-## algoritme
+# algoritme
 
-### snel
+## snel
 
-#### opbouwen
+### opbouwen
 
 $C_1 \Rightarrow BF_1(C_2, C_3, ..., C_n) \Rightarrow C_1'$
 
@@ -20,7 +20,7 @@ Zo hebben we al veel elementen kunnen uitsluiten.
 
 Dan kunnen we de volgende cascadetrap analoog doen met $C_1', C_2', ..., C_n'$
 
-#### classificiëren
+### classificiëren
 
 Indien de categoriëen die we in een bloomfilter zullen steken allemaal leeg zijn, stopt ons algoritme.
 
@@ -28,11 +28,11 @@ Indien alle categoriëen behalve 1 leeg zijn na het afwerken van de volledige tr
 
 Na het stoppen zal er 1 niet-lege categorie overblijven, hiermee kunnen wij dus de gevallen classificeren die overal (false-)positives zijn.
 
-### minder opslag
+## minder opslag
 
 Het vorige algoritme is simpel en snel, maar we kunnen beter doen omtrent opslag (voor grote verzamelingen).
 
-#### opbouwen
+### opbouwen
 
 Het is een uitbreiding van het snelle algoritme.
 
@@ -50,7 +50,7 @@ Dus $BF_i$ wordt vervangen door 2 bloomfilters $BF_{i_1}$ en $BF_{i_2}$. Maar de
 
 De rest van het opbouwen is analoog aan het vorige algoritme.
 
-#### classificiëren
+### classificiëren
 
 Indien $BF_{i_1}$ als antwoord neen geeft, skippen we $BF_{i_2}$ en gaan we direct naar $BF_{(i + 1)_1}$
 
@@ -62,7 +62,7 @@ Note: De grootte van het cascade bestand is kleiner, maar dit algoritme gebruikt
 
 <TODO: Snel algoritme is amper sneller, mss hernoemen naar "eenvoudig algoritme" ofzo>
 
-## # bits en hashfuncties
+# # bits en hashfuncties
 
 \# hashfuncties optimaal: $k = \frac{n}{m} * \ln{2}$ met $m = \text{\# elementen}$ en $n = \text{\# bits}$
 
@@ -108,7 +108,7 @@ Omdat de afrondingen dan veel minder doorwegen. Nu heb ik afrondingen op mijn aa
 
 Bv. een afronding van 5.4 naar 5 bij de k zal meer verschil geven dan een afronding van 1234567.4 naar 1234567, niet alleen doordat het getal daardoor relatief minder verkleint, maar ook omdat ik die n toch moet afronden naar een getal deelbaar door 8 (aangezien ik een `uint8_t*` gebruik voor de bloomfilter bits). Dus 1234567.4 wordt 1234567, maar dan 1234568 om deelbaar door 8 te worden, dus de afronding maakt geen verschil.
 
-### benchmarks
+## benchmarks
 
 Ik zal geen rekening houden met tijd, aangezien de opslagruimte van de files het belangrijkst is.
 
@@ -116,33 +116,35 @@ Om te zien of k aan te passen per cascadetrap iets hielp heb ik op het eenvoudig
 
 k = 3 voor de eerste cascadetrap:
 
-**k** 57 MB, **k++** 58 MB, **k--** 57 MB
+`k` 57 MB, `k++` 58 MB, `k--` 57 MB
 
 Conclusie, gebruik dezelfde k bij elke cascadetrap.
 
 Hypothese, de optimale k is quasi hetzelfde, onafhankelijk de grootte van de verzameling.
 
-#### snel algoritme
+### snel algoritme
 
-##### large.txt
+**large.txt**
 
-**k=1** 53 MB, **k=2** 53 MB, **k=3** 57 MB, **k=4** 64 MB, **k=5** 73 MB
+`k=1` 53 MB, `k=2` 53 MB, `k=3` 57 MB, `k=4` 64 MB, `k=5` 73 MB
 
-##### medium.txt
+**medium.txt**
 
-**k=1** 6.3 MB, **k=2** 7.0 MB, **k=3** 8.1 MB, **k=4** 9.5 MB, **k=5** 12 MB
+`k=1` 6.3 MB, `k=2` 7.0 MB, `k=3` 8.1 MB, `k=4` 9.5 MB, `k=5` 12 MB
 
-##### small.txt
+**small.txt**
 
-**k=1** 128 KB, **k=2** 7144 KB, **k=3** 168 KB, **k=4** 200 KB, **k=5** 236 KB
+`k=1` 128 KB, `k=2` 7144 KB, `k=3` 168 KB, `k=4` 200 KB, `k=5` 236 KB
 
 Conclusie, de optimale k voor het snel algoritme is 1 en mijn hypothese klopt.
 
-#### minder opslag algoritme
+### minder opslag algoritme
 
 Aangezien ik heb geconcludeerd dat de hypothese klopt, is het enkel nodig om de large.txt te benchmarken, maar voor volledigheid zal ik ook de rest doen.
 
 k1 wordt gebruikt voor $BF_{i_1}$ en k2 voor $BF_{i_2}$
+
+Zie figure 1-3.
 
 ![benchmark large](img/benchmark_large.png)
 
@@ -154,7 +156,7 @@ We zien dat (3, 4) het beste is voor large en medium en (1, 2) voor small.
 
 Maar de hypothese klopt nog steeds, aangezien de size voor (3, 4) bij small amper scheelt met die voor (1, 2), dus neem ik overal (3, 4).
 
-## bestandsformaat cascade
+# bestandsformaat cascade
 
 vooraf:
 - 1 byte die het soort algoritme aangeven (0 = snel algoritme, 1 = algoritme met weinig opslag)
@@ -176,7 +178,7 @@ indien een bloomfilter leeg is (doordat de bijhorende categorie leeg is), is er 
 
 - dan eindigen met de laatste niet lege categorie naam (1 byte lengte + 1 byte * lengte)
 
-## limitaties
+# limitaties
 
 Voor de categorie namen is er een limitatie van 256 chars bij zowel `train` als `classify`
 
