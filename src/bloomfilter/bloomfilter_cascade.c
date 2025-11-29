@@ -62,7 +62,7 @@ uint8_t update_category(Category* category, Bloomfilter* bloomfilter, Category* 
     return 0;
 }
 
-uint8_t fast_algorithm(FILE* file, CategoryList* list) {
+uint8_t simple_algorithm(FILE* file, CategoryList* list) {
     bool first_step = true;
     uint32_t empty_count = 0;
 
@@ -109,7 +109,7 @@ uint8_t fast_algorithm(FILE* file, CategoryList* list) {
     return 0;
 }
 
-uint8_t less_storage_algorithm(FILE* file, CategoryList* list) {
+uint8_t enhanced_algorithm(FILE* file, CategoryList* list) {
     bool first_step = true;
     uint32_t empty_count = 0;
 
@@ -216,9 +216,9 @@ uint8_t create_bloomfilter_cascade(char* file_path, CategoryList* list, bool alg
     if (!file) return 1;
 
     if (algorithm) {
-        if (less_storage_algorithm(file, list)) return 1;
+        if (enhanced_algorithm(file, list)) return 1;
     } else {
-        if (fast_algorithm(file, list)) return 1;
+        if (simple_algorithm(file, list)) return 1;
     }
 
     printf("Succesfully wrote bloomfilter cascade to: %s\n", file_path);

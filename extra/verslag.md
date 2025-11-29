@@ -1,6 +1,6 @@
 # algoritme
 
-## snel
+## 1.0
 
 ### opbouwen
 
@@ -28,17 +28,17 @@ Indien alle categoriëen behalve 1 leeg zijn na het afwerken van de volledige tr
 
 Na het stoppen zal er 1 niet-lege categorie overblijven, hiermee kunnen wij dus de gevallen classificeren die overal (false-)positives zijn.
 
-## minder opslag
+## 2.0
 
 Het vorige algoritme is simpel en snel, maar we kunnen beter doen omtrent opslag (voor grote verzamelingen).
 
 ### opbouwen
 
-Het is een uitbreiding van het snelle algoritme.
+Het is geen nieuw algoritme, maar een uitbreiding van de 1.0.
 
 Noem $C_1', ..., C_{i - 1}', C_{i + 1}, ..., C_n = \bar{C_i}$
 
-Om $BF_i(\bar{C_i})$ uit het snelle algoritme te verkleinen zullen we $\bar{C_i}$ eerst filteren met een kleinere bloomfilter van $C_i$:
+Om $BF_i(\bar{C_i})$ uit de 1.0 te verkleinen zullen we $\bar{C_i}$ eerst filteren met een kleinere bloomfilter van $C_i$:
 
 $\bar{C_i} \Rightarrow BF_{i_1}(C_i) \Rightarrow \bar{C_i'}$
 
@@ -57,10 +57,6 @@ Indien $BF_{i_1}$ als antwoord neen geeft, skippen we $BF_{i_2}$ en gaan we dire
 Indien het anwoord ja was checken we $BF_{i_2}$, indien neen zit het in $C_i$ en stoppen we, indien ja gaan we over naar $BF_{(i + 1)_1}$
 
 Indien $\bar{C_i}'$ leeg is, dan maken we geen $BF_{i_2}$, in dit geval als het antwoord ja is bij $BF_{i_1}$ weten we dat het element in categorie $C_i$ zit
-
-Note: De grootte van het cascade bestand is kleiner, maar dit algoritme gebruikt meer geheugen.
-
-<TODO: Snel algoritme is amper sneller, mss hernoemen naar "eenvoudig algoritme" ofzo>
 
 # # bits en hashfuncties
 
@@ -108,7 +104,7 @@ Omdat de afrondingen dan veel minder doorwegen. Nu heb ik afrondingen op mijn aa
 
 Bv. een afronding van 5.4 naar 5 bij de k zal meer verschil geven dan een afronding van 1234567.4 naar 1234567, niet alleen doordat het getal daardoor relatief minder verkleint, maar ook omdat ik die n toch moet afronden naar een getal deelbaar door 8 (aangezien ik een `uint8_t*` gebruik voor de bloomfilter bits). Dus 1234567.4 wordt 1234567, maar dan 1234568 om deelbaar door 8 te worden, dus de afronding maakt geen verschil.
 
-## benchmarks
+## benchmarks voor optimale k
 
 Ik zal geen rekening houden met tijd, aangezien de opslagruimte van de files het belangrijkst is.
 
@@ -122,7 +118,7 @@ Conclusie, gebruik dezelfde k bij elke cascadetrap.
 
 Hypothese, de optimale k is quasi hetzelfde, onafhankelijk de grootte van de verzameling.
 
-### snel algoritme
+### algoritme 1.0
 
 **large.txt**
 
@@ -136,9 +132,9 @@ Hypothese, de optimale k is quasi hetzelfde, onafhankelijk de grootte van de ver
 
 `k=1` 128 KB, `k=2` 7144 KB, `k=3` 168 KB, `k=4` 200 KB, `k=5` 236 KB
 
-Conclusie, de optimale k voor het snel algoritme is 1 en mijn hypothese klopt.
+Conclusie, de optimale k voor dit algoritme is 1 en mijn hypothese klopt.
 
-### minder opslag algoritme
+### algoritme 2.0
 
 Aangezien ik heb geconcludeerd dat de hypothese klopt, is het enkel nodig om de large.txt te benchmarken, maar voor volledigheid zal ik ook de rest doen.
 
@@ -159,7 +155,7 @@ Maar de hypothese klopt nog steeds, aangezien de size voor (3, 4) bij small ampe
 # bestandsformaat cascade
 
 vooraf:
-- 1 byte die het soort algoritme aangeven (0 = snel algoritme, 1 = algoritme met weinig opslag)
+- 1 byte die het soort algoritme aangeven (0 = algoritme 1.0, 1 = algoritme 2.0)
 - aantal categoriëen (4 byte) = aantal bloomfilters per trap
 - namen van categoriëen in juiste volgorde (1 byte lengte + 1 byte * lengte)
 
@@ -186,7 +182,7 @@ Indien een ingegeven element bij `classify` in geen enkele categorie zit, dan za
 
 Voor de nummers (aantal elementen, aantal bits ...) is er een limitatie van 32 bits (0 - 4,294,967,295)
 
-Bv. het aantal elementen in `large.txt` is 25,000,000 en pas vanaf we een $k \geq 120$ hebben zal het aantal bits voor een bloomfilter voor alle categoriëen (wat we nooit creëeren) daar groter zijn dan de limitatie, maar ik gebruik $k \leq 4$ en dan kan je 744,261,117 elementen hebben, dus deze limiet is voldoende. 
+Bv. het aantal elementen in `large.txt` is 25,000,000 en pas vanaf we een $k \geq 120$ hebben zal het aantal bits voor een bloomfilter voor alle categoriëen (wat we nooit creëeren) daar groter zijn dan de limitatie, maar $k \leq 4$ is optimaal en dan kan je 744,261,117 elementen hebben, dus deze limiet is voldoende. 
 
 Ik kan het verhogen naar 64 bit unsigned integers, maar dat zal het aantal geheugen onnodeloos vergroten, aangezien de laatste 32 bits quasi nooit gebruikt zullen worden en we veel zo'n nummers zullen gebruiken. 
 

@@ -1,6 +1,6 @@
 #include "classify.h"
 
-char* classify_fast(Cascade* cascade, char* element_name) {
+char* classify_simple(Cascade* cascade, char* element_name) {
     char* category_name = NULL;
 
     bool done = false;
@@ -21,7 +21,7 @@ char* classify_fast(Cascade* cascade, char* element_name) {
     return category_name;
 }
 
-char* classify_less_storage(Cascade* cascade, char* element_name) {
+char* classify_enhanced(Cascade* cascade, char* element_name) {
     char* category_name = NULL;
 
     bool done = false;
@@ -47,23 +47,17 @@ char* classify_less_storage(Cascade* cascade, char* element_name) {
 }
 
 char* classify(Cascade* cascade, char* element_name) {
-    if (cascade->algorithm) return classify_less_storage(cascade, element_name);
-    else return classify_fast(cascade, element_name);
+    if (cascade->algorithm) return classify_enhanced(cascade, element_name);
+    else return classify_simple(cascade, element_name);
 }
 
 void run_classify(Cascade* cascade) {
     while (1) {
         char element_name[256];
-        if (fgets(element_name, sizeof(element_name), stdin) == NULL) {
-            fprintf(stderr, "Failed to read input\n");
-            return;
-        }
-        element_name[strcspn(element_name, "\n")] = '\0';
 
-        if (strcmp(element_name, ":q") == 0) {
-            printf("Done!\n");
-            return;
-        }
+        if (fgets(element_name, sizeof(element_name), stdin) == NULL) return;
+
+        element_name[strcspn(element_name, "\n")] = '\0';
 
         char* category_name = classify(cascade, element_name);
 

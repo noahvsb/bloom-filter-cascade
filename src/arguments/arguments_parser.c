@@ -5,7 +5,7 @@ Command help_message(char* program) {
     printf("train:\n");
     printf("  Arguments:\n");
     printf("    -o <file>    output file\n");
-    printf("    -a <int>     0: fast algorithm - 1: less storage algorithm (default = 1)\n");
+    printf("    -a <int>     0: simple algorithm - 1: enhanced algorithm (default = 1)\n");
     printf("    <file>       input file (last argument that isn't preceded by a flag)\n");
     printf("  Examples:\n");
     printf("    %s train -o cascade.bfc -a 0 categories.txt\n", program);

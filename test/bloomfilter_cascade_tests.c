@@ -3,11 +3,11 @@
 #include "acutest.h"
 #include "../src/bloomfilter/bloomfilter.h"
 
-void test_bloomfilter_cascade_create_fast(void) {
+void test_bloomfilter_cascade_create_simple(void) {
     srand(123);
 
     char* input_file_path = "test/data/test.txt";
-    char* output_file_path = "test/data/temp_fast.bfc";
+    char* output_file_path = "test/data/temp_simple.bfc";
     CategoryList* list = parse_categories(input_file_path);
 
     printf("\n");
@@ -22,11 +22,11 @@ void test_bloomfilter_cascade_create_fast(void) {
     remove(output_file_path);
 }
 
-void test_bloomfilter_cascade_create_less_storage(void) {
+void test_bloomfilter_cascade_create_enhanced(void) {
     srand(123);
     
     char* input_file_path = "test/data/test.txt";
-    char* output_file_path = "test/data/temp_less_storage.bfc";
+    char* output_file_path = "test/data/temp_enhanced.bfc";
     CategoryList* list = parse_categories(input_file_path);
 
     printf("\n");

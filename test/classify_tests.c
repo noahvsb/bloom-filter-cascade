@@ -31,12 +31,12 @@ void test_classify_large(void) {
     test_classify_template("data/large.txt", "data/large.bfc", true);
 }
 
-void test_classify_fast(void) {
+void test_classify_simple(void) {
     test_classify_template("test/data/test.txt", "test/data/test0.bfc", false);
 }
 
-// fun fact: more storage in this case, because test/data/test.txt is very small
-void test_classify_less_storage(void) {
+// fun fact: the enhanced performs worse in this case, because test/data/test.txt is very small
+void test_classify_enhanced(void) {
     test_classify_template("test/data/test.txt", "test/data/test1.bfc", false);
 }
 

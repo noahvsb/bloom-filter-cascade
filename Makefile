@@ -16,14 +16,14 @@ TEST_TARGET := run_tests
 TEST_LARGE_TARGET := run_large_test
 MASSIF_TARGET := memory.ms
 MASSIF_LARGE_TARGET := memory_large.ms
-MASSIF_LARGE_FAST_TARGET := memory_large_fast.ms
+MASSIF_LARGE_SIMPLE_TARGET := memory_large_simple.ms
 
 # Source files
 SRC_FILES := $(shell find $(SRC_DIR) -name '*.c')
 TEST_FILES := $(filter-out $(TEST_DIR)/test_large.c, $(shell find $(TEST_DIR) -name '*.c')) # all in TEST_DIR without large_test.c
 TEST_LARGE_FILES := $(TEST_DIR)/test_large.c $(TEST_DIR)/classify_tests.c
 
-.PHONY: all debug build build_debug build_test test build_test_large train_large test_large memcheck massif massif_large massif_large_fast clean
+.PHONY: all debug build build_debug build_test test build_test_large train_large train_large_simple test_large memcheck massif massif_large massif_large_simple clean
 
 all: build test
 
@@ -57,6 +57,11 @@ train_large: build
 	@size=$$(du -h $(LARGE_BFC) | cut -f1); \
 	echo "✅ trained $(LARGE_BFC) ($${size}B)"
 
+train_large_simple: build
+	./$(TRAIN_LARGE_COMMAND) -a 0
+	@size=$$(du -h $(LARGE_BFC) | cut -f1); \
+	echo "✅ trained $(LARGE_BFC) ($${size}B) using the simple algorithm"
+
 test_large: build_test_large
 	./$(TEST_LARGE_TARGET)
 	@echo "✅ ran large test"
@@ -75,11 +80,11 @@ massif_large: build_debug
 	massif-visualizer $(MASSIF_LARGE_TARGET)
 	@echo "✅ valgrind massif large done"
 
-massif_large_fast: build_debug
-	valgrind --tool=massif --stacks=yes --massif-out-file=$(MASSIF_LARGE_FAST_TARGET) -- $(TRAIN_LARGE_COMMAND) -a 0
-	massif-visualizer $(MASSIF_LARGE_FAST_TARGET)
-	@echo "✅ valgrind massif large fast done"
+massif_large_simple: build_debug
+	valgrind --tool=massif --stacks=yes --massif-out-file=$(MASSIF_LARGE_SIMPLE_TARGET) -- $(TRAIN_LARGE_COMMAND) -a 0
+	massif-visualizer $(MASSIF_LARGE_SIMPLE_TARGET)
+	@echo "✅ valgrind massif large simple done"
 
 clean:
-	rm -f $(SRC_TARGET) $(TEST_TARGET) $(TEST_LARGE_TARGET) $(MASSIF_TARGET) $(MASSIF_LARGE_TARGET) $(MASSIF_LARGE_FAST_TARGET)
+	rm -f $(SRC_TARGET) $(TEST_TARGET) $(TEST_LARGE_TARGET) $(MASSIF_TARGET) $(MASSIF_LARGE_TARGET) $(MASSIF_LARGE_SIMPLE_TARGET)
 	@echo "✅ removed target binaries"

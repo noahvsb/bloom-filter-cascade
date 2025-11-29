@@ -17,15 +17,15 @@ TEST_LIST = {
     { "cascade writer: bloomfilter", test_write_bloomfilter },
     { "cascade writer: end", test_write_end },
 
-    { "bloomfilter cascade: create fast", test_bloomfilter_cascade_create_fast },
-    { "bloomfilter cascade: create less storage", test_bloomfilter_cascade_create_less_storage },
+    { "bloomfilter cascade: create simple", test_bloomfilter_cascade_create_simple },
+    { "bloomfilter cascade: create enhanced", test_bloomfilter_cascade_create_enhanced },
     { "bloomfilter cascade: failcheck", test_bloomfilter_cascade_failcheck },
 
     { "cascade parser: parse", test_parse_cascade },
     { "cascade parser: parse failcheck", test_parse_cascade_failcheck },
 
-    { "classify: classify fast", test_classify_fast },
-    { "classify: classify less storage", test_classify_less_storage },
+    { "classify: classify simple", test_classify_simple },
+    { "classify: classify enhanced", test_classify_enhanced },
 
     { NULL, NULL }
 };
