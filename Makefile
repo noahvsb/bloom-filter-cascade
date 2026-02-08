@@ -81,7 +81,7 @@ massif_large: build_debug
 	@echo "✅ valgrind massif large done"
 
 massif_large_simple: build_debug
-	valgrind --tool=massif --stacks=yes --massif-out-file=$(MASSIF_LARGE_SIMPLE_TARGET) -- $(TRAIN_LARGE_COMMAND) -a 0
+	valgrind --tool=massif --stacks=yes --massif-out-file=$(MASSIF_LARGE_SIMPLE_TARGET) -- ./$(TRAIN_LARGE_COMMAND) -a 0
 	massif-visualizer $(MASSIF_LARGE_SIMPLE_TARGET)
 	@echo "✅ valgrind massif large simple done"
 
