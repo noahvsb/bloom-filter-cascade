@@ -5,4 +5,4 @@ A cascade of [bloom filters](https://en.wikipedia.org/wiki/Bloom_filter) is used
 
 I got a 3.5/4 for this, pretty good :)
 
-You can find my report in dutch in extra/verslag.pdf
+You can find my report in dutch [here](extra/verslag.pdf).
