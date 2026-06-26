@@ -1,6 +1,6 @@
 #define TEST_NO_MAIN
 
-#include "acutest.h"
+#include "tests.h"
 #include "../src/file/cascade_writer.h"
 
 void test_write_start(void) {

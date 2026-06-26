@@ -1,6 +1,6 @@
 #define TEST_NO_MAIN
 
-#include "acutest.h"
+#include "tests.h"
 #include "../src/hash/murmurhash.h"
 #include <string.h>
 

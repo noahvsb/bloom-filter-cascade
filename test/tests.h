@@ -1,7 +1,7 @@
 #ifndef TESTS_H
 #define TESTS_H
 
-#include "acutest.h"
+#include "include/acutest.h"
 
 // argument parser tests
 void test_help_message(void);

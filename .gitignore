@@ -82,3 +82,6 @@ fabric.properties
 
 ### Data ###
 data/*
+
+### Acutest ###
+test/include/*

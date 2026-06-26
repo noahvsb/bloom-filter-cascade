@@ -1,6 +1,6 @@
 #define TEST_NO_MAIN
 
-#include "acutest.h"
+#include "tests.h"
 #include "../src/bloomfilter/bloomfilter.h"
 
 void test_bloomfilter_cascade_create_simple(void) {

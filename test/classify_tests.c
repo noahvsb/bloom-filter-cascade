@@ -1,6 +1,6 @@
 #define TEST_NO_MAIN
 
-#include "acutest.h"
+#include "tests.h"
 #include "../src/classify/classify.h"
 #include "../src/file/categories_parser.h"
 #include "../src/file/cascade_parser.h"
